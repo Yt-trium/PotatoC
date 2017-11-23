@@ -11,10 +11,11 @@ COMMON_DEPS = $(SOURCES) $(HEADERS)
 
 SOURCES = $(wildcard src/*.c)
 HEADERS = $(wildcard includes/*.h)
+OBJS = $(SOURCES:src/%.c=bin/%.o)
 
 # Main
 
-all: $(DIR) build/cpotato.o $(EXS)
+all: $(DIR) $(OBJS) $(EXS)
 
 # Directories
 
@@ -23,29 +24,29 @@ $(DIR):
 
 # C Library 
 
-build/cpotato.o: $(SOURCES) $(HEADERS)
-	$(C_COMPILER) $(CFLAGS) -c $(SOURCES) -o $@
+bin/%.o: src/%.c
+	$(C_COMPILER) -o $@ -c $< $(CFLAGS)
 
 # Parser
 
-bin/parser: build/cpotato.o yacc/parser.y lex/parser.l
+bin/parser: yacc/parser.y lex/parser.l $(OBJS)
 	yacc -v -d yacc/parser.y -o build/y.parser.c
 	flex -o build/parser.yy.c lex/parser.l
-	$(C_COMPILER) $(CFLAGS) build/y.parser.c build/parser.yy.c build/cpotato.o $(LFLAGS) -o $@
+	$(C_COMPILER) $(CFLAGS) build/y.parser.c build/parser.yy.c $(OBJS) $(LFLAGS) -o $@
 
 # Expr
 
-bin/expr: build/cpotato.o yacc/expr.y lex/expr.l
+bin/expr: yacc/expr.y lex/expr.l $(OBJS)
 	yacc -v -d yacc/expr.y -o build/y.expr.c
 	flex -o build/expr.yy.c lex/expr.l
-	$(C_COMPILER) $(CFLAGS) build/y.expr.c build/expr.yy.c build/cpotato.o $(LFLAGS) -o $@
+	$(C_COMPILER) $(CFLAGS) build/y.expr.c build/expr.yy.c $(OBJS) $(LFLAGS) -o $@
 
 # Calc
 
-bin/calc: build/cpotato.o yacc/calc.y lex/calc.l
+bin/calc: yacc/calc.y lex/calc.l $(OBJS)
 	yacc -v -d yacc/calc.y -o build/y.calc.c
 	flex -o build/calc.yy.c lex/calc.l
-	$(C_COMPILER) $(CFLAGS) build/y.calc.c build/calc.yy.c build/cpotato.o $(LFLAGS) -o $@
+	$(C_COMPILER) $(CFLAGS) build/y.calc.c build/calc.yy.c $(OBJS) $(LFLAGS) -o $@
 
 clean:
 	rm -rif *.o y.*.c y.*.o y.*.h *.yy.c a.out $(EXS) y.*.output build
