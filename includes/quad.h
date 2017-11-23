@@ -21,6 +21,8 @@ typedef struct quad{
     struct quad * next;
 } quad;
 
+quad * alloc_quad();
+
 quad * add_quad(quad ** head, 
                 enum OpType type, 
                 symbol * res, 
@@ -30,33 +32,7 @@ quad * add_quad(quad ** head,
 // Append listRight to listLeft
 void append_quad(quad * listLeft, quad * listRight);
 
-void print_quad(quad * head)
-{
-    printf("///////////////////\n");
-    printf("// Quad List\n");
-    printf("///////////////////\n");
-    while(head != NULL)
-    {
-        printf("id: %4d, operator: ", head->id);
-
-        switch (head->type)
-        {
-            case PLUS:
-                printf("+"); break;
-            case MINUS:
-                printf("+"); break;
-            default:
-                break;
-        }
-
-        printf(", res: %5s, left: %5s, right: %5s\n",
-                head->res->name,
-                head->left->name,
-                head->right->name);
-
-        head = head->next;
-    }
-}
+void print_quad(quad * head);
 
 
 #endif

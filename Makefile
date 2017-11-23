@@ -2,7 +2,7 @@
 # -lll for lex on Os X
 
 LFLAGS= -ly -lfl		    # Lex linking flags
-CFLAGS= -Wall -Iincludes -Ibuild    # C Flags
+CFLAGS= -g -Wall -Iincludes -Ibuild    # C Flags
 C_COMPILER = gcc		    # C compiler
 EXS = bin/parser bin/expr bin/calc  # Final output files
 
