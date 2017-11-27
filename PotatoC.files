@@ -1,0 +1,5 @@
+lex/potatoc.l
+src/ast.c
+src/ast.h
+src/test.c
+yacc/potatoc.y
