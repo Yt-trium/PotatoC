@@ -4,7 +4,7 @@
 LFLAGS= -ly -lfl		    # Lex linking flags
 CFLAGS= -g -Wall -Iincludes -Ibuild    # C Flags
 C_COMPILER = gcc		    # C compiler
-EXS = bin/parser bin/expr bin/calc  # Final output files
+EXS = bin/parser bin/expr bin/calc bin/potatoc # Final output files
 
 DIR = build bin			    # Folders to create
 COMMON_DEPS = $(SOURCES) $(HEADERS)
@@ -48,5 +48,16 @@ bin/calc: yacc/calc.y lex/calc.l $(OBJS)
 	flex -o build/calc.yy.c lex/calc.l
 	$(C_COMPILER) $(CFLAGS) build/y.calc.c build/calc.yy.c $(OBJS) $(LFLAGS) -o $@
 
+# PotatoC
+
+bin/potatoc: yacc/potatoc.y lex/potatoc.l $(OBJS)
+	yacc -v -d yacc/potatoc.y -o build/y.potatoc.c
+	flex -o build/potatoc.yy.c lex/potatoc.l
+	$(C_COMPILER) $(CFLAGS) build/y.potatoc.c build/potatoc.yy.c $(OBJS) $(LFLAGS) -o $@
+
+
 clean:
 	rm -rif *.o y.*.c y.*.o y.*.h *.yy.c a.out $(EXS) y.*.output build
+
+test: all
+	./bin/potatoc

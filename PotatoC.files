@@ -1,0 +1,6 @@
+includes/quad.h
+includes/symbol.h
+src/quad.c
+src/symbol.c
+lex/potatoc.l
+yacc/potatoc.y
