@@ -1,33 +1,61 @@
 %{
+  #include <stdio.h>
+  #include <stdlib.h>
+  #include <string.h>
+  #include "ast.h"
 
-    #include <stdio.h>
-    #include <stdlib.h>
-    int yylex();
-    void yyerror(void *);
-
+  int yylex();
+  void yyerror(char*);
 %}
 
-%token INT;
-%token ASSIGN;
-%token SYM;
-%token EOFI;
-%token EOFL;
-%token CTYPE;
-%token PREPROC;
-%start ligne;
+%union {
+  char* string;
+  int value;
+  struct ast* ast;
+}
+
+%token <value> INT STENCIL
+%token <value> IF ELSE WHILE FOR RETURN
+%token <value> CONSTANT ASSIGN PLUS MINUS MULT DIVI
+%token <value> END
+%token <string> IDENTIFIER
+
+
+%type <ast> expr
+
+%left PLUS
+%left MINUS
+%left MULT
+%left DIVI
 
 %%
 
-ligne: CTYPE SYM ASSIGN INT EOFI EOFL { printf("Assign %d to symbole %d of type %d\n", $4, $2, $1); }
-     | CTYPE { printf("Type %d\n", $1); }
-     | CTYPE EOFL { printf("Type %d\n", $1); }
-     | EOFL { printf("Empty line\n"); }
+axiom:
+    | expr END { printf("Chaine reconnue !\n");
+                 ast_print($1, 0);
+                 exit(0);
+               }
+    | assign END {printf("Chaine reconnue !\n");}
+  ;
+
+assign:
+    | IDENTIFIER ASSIGN expr    {}
+    ;
+
+expr:
+    expr PLUS expr { $$ = ast_new_operation("+", $1, $3); }
+  | expr MINUS expr { $$ = ast_new_operation("-", $1, $3); }
+  | expr MULT expr { $$ = ast_new_operation("*", $1, $3); }
+  | expr DIVI expr { $$ = ast_new_operation("/", $1, $3); }
+  | '(' expr ')'  { $$ = $2; }
+  | IDENTIFIER            { $$ = ast_new_id($1); }
+  | CONSTANT        { $$ = ast_new_number($1); }
+  ;
 
 %%
 
 
-int main(){
-
-    return yyparse();
-
+int main() {
+  printf("PotatoC 1.0\n");
+  return yyparse();
 }

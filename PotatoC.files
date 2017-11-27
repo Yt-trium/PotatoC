@@ -1,6 +1,8 @@
 includes/quad.h
 includes/symbol.h
+includes/ast.h
 src/quad.c
 src/symbol.c
+src/ast.c
 lex/potatoc.l
 yacc/potatoc.y
