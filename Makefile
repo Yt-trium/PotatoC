@@ -57,7 +57,7 @@ bin/potatoc: yacc/potatoc.y lex/potatoc.l $(OBJS)
 
 
 clean:
-	rm -rif *.o y.*.c y.*.o y.*.h *.yy.c a.out $(EXS) y.*.output build
+	rm -rif *.o ./bin/*.o y.*.c y.*.o y.*.h *.yy.c a.out $(EXS) y.*.output build
 
 test: all
 	./bin/potatoc

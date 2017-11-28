@@ -21,7 +21,7 @@ number     [1-9][0-9]*
 "int"                   { return(INT); }
 "stencil"               { return(STENCIL); }
 
-"return"		{ return(RETURN); }
+"return"                { return(RETURN); }
 
 "="                     { return(ASSIGN); }
 "+"                     { return(PLUS); }

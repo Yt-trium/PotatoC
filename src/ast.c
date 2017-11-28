@@ -8,6 +8,15 @@ ast* ast_new_operation(char* op, ast* left, ast* right) {
   return new;
 }
 
+ast *ast_new_statement(ast* left, ast* right)
+{
+    ast* new = malloc(sizeof(ast));
+    new->type = strdup("=");
+    new->u.operation.left = left;
+    new->u.operation.right = right;
+    return new;
+  }
+
 ast* ast_new_number(int number) {
   ast* new = malloc(sizeof(ast));
   new->type = strdup("number");
@@ -36,4 +45,18 @@ void ast_print(ast* ast, int indent) {
     ast_print(ast->u.operation.left, indent + 1);
     ast_print(ast->u.operation.right, indent + 1);
   }
+}
+
+struct quad* ast_codegen(ast * ast, struct symbol** symbol_table)
+{
+    if (strcmp(ast->type, "+") == 0)
+    {
+        quad* left = ast_codegen(ast->u.statement.left,symbol_table);
+        quad* right = ast_codegen(ast->u.statement.right,symbol_table);
+        // new_code = quad_gen(’+’, left->result , right->result , cg->result);
+        // cg->result = symbol_new_temp(symbol_table);
+        // cg->code = left->code;
+        // quad_add(&cg->code, right->code);
+        // quad_add(&cg->code, new_code);
+    }
 }

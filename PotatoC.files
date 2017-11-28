@@ -1,6 +1,8 @@
+includes/mips.h
 includes/quad.h
 includes/symbol.h
 includes/ast.h
+src/mips.c
 src/quad.c
 src/symbol.c
 src/ast.c
