@@ -53,7 +53,7 @@ struct quad* ast_codegen(ast * ast, struct symbol** symbol_table)
     {
         quad* left = ast_codegen(ast->u.statement.left,symbol_table);
         quad* right = ast_codegen(ast->u.statement.right,symbol_table);
-        // new_code = quad_gen(’+’, left->result , right->result , cg->result);
+        // quad* new_code = add_quad(quad*,'+',cg->res, left->result , right->result);
         // cg->result = symbol_new_temp(symbol_table);
         // cg->code = left->code;
         // quad_add(&cg->code, right->code);

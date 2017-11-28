@@ -34,16 +34,16 @@
 axiom:
     | expr END { printf("Chaine reconnue !\n");
                  ast_print($1, 0);
-                 ast_codegen($1, st);
+                 //ast_codegen($1, st);
                }
     | assign END {printf("Chaine reconnue !\n");
                   ast_print($1, 0);
-                 ast_codegen($1, st);
+                 //ast_codegen($1, st);
                              }
   ;
 
 assign:
-    | id ASSIGN expr    { $$ = ast_new_operation("=", $1, $3); }
+    | id ASSIGN expr    { $$ = ast_new_statement($1, $3); }
     ;
 
 expr:
