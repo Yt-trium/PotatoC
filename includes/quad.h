@@ -4,12 +4,10 @@
 #include "symbol.h"
 
 enum OpType{
-    PLUS,
-    MINUS,
-    MULTIPLY,
-    DIVIDE,
-    EQ,
-    NE
+    QUAD_OP_PLUS,
+    QUAD_OP_MINUS,
+    QUAD_OP_MULT,
+    QUAD_OP_DIVI
 };
 
 typedef struct quad{

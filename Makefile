@@ -4,7 +4,7 @@
 LFLAGS= -ly -lfl		    # Lex linking flags
 CFLAGS= -g -Wall -Iincludes -Ibuild    # C Flags
 C_COMPILER = gcc		    # C compiler
-EXS = bin/parser bin/expr bin/calc bin/potatoc # Final output files
+EXS = bin/potatoc # Final output files
 
 DIR = build bin			    # Folders to create
 COMMON_DEPS = $(SOURCES) $(HEADERS)

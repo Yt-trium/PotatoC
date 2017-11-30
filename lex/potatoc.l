@@ -4,7 +4,7 @@
   #include "y.potatoc.h"
 %}
 
-blank      [\t\b\n ]*
+blank      [\t\b\v\n\f ]*
 identifier [a-zA-Z_]+[0-9a-zA-Z_]*
 number     [1-9][0-9]*
 

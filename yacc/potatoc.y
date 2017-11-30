@@ -2,11 +2,13 @@
   #include <stdio.h>
   #include <stdlib.h>
   #include <string.h>
+  #include "ast.h"
 
   int yylex();
   void yyerror(char*);
 
-  struct symbol **st;
+  symbol_list st;
+  struct quad **ql;
 
 %}
 
@@ -32,25 +34,24 @@
 %%
 
 axiom:
-    | expr END { printf("Chaine reconnue !\n");
-                 ast_print($1, 0);
-                 //ast_codegen($1, st);
-               }
-    | assign END {printf("Chaine reconnue !\n");
-                  ast_print($1, 0);
-                 //ast_codegen($1, st);
-                             }
+    | expr END {    printf("Epression reconnue !\n");
+                    ast_print($1, 0);
+                    ast_codegen($1, st);}
+    | assign END {  printf("Definition reconnue !\n");
+                    ast_print($1, 0);
+                    ast_codegen($1, st);}
+    // | axiom axiom
   ;
 
 assign:
-    | id ASSIGN expr    { $$ = ast_new_statement($1, $3); }
+    id ASSIGN expr    { $$ = ast_new_statement($1, $3); }
     ;
 
 expr:
-    expr PLUS expr  { $$ = ast_new_operation("+", $1, $3); }
-  | expr MINUS expr { $$ = ast_new_operation("-", $1, $3); }
-  | expr MULT expr  { $$ = ast_new_operation("*", $1, $3); }
-  | expr DIVI expr  { $$ = ast_new_operation("/", $1, $3); }
+    expr PLUS expr  { $$ = ast_new_operation(AST_OP_PLUS, $1, $3); }
+  | expr MINUS expr { $$ = ast_new_operation(AST_OP_MINUS, $1, $3); }
+  | expr MULT expr  { $$ = ast_new_operation(AST_OP_MULT, $1, $3); }
+  | expr DIVI expr  { $$ = ast_new_operation(AST_OP_DIVI, $1, $3); }
   | '(' expr ')'    { $$ = $2; }
   | IDENTIFIER      { $$ = ast_new_id($1); }
   | CONSTANT        { $$ = ast_new_number($1); }

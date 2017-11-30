@@ -1,48 +1,63 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
 #include "symbol.h"
 
-symbol * alloc_symbol()
+symbol          symbol_alloc()
 {
-    symbol * ptr = malloc(sizeof(symbol));
-    ptr->name = NULL;
-    ptr->value = 0;
-    ptr->constant = false;
-    ptr->next = NULL;
-    return ptr;
+    symbol s = malloc(sizeof(symbol_));
+    s->name = NULL;
+    s->type = SYMBOL_INT;
+    s->value = 0;
+    s->next = NULL;
+    return s;
 }
 
-symbol * add_symbol(symbol ** head, char* name)
+void            symbol_print(symbol s)
 {
-    // If list is empty
-    if(*head == NULL)
+    if(s == NULL)
+        printf("ERROR: TRYING TO PRINT NULL SYMBOL");
+    else
+        printf("%s %d %d", s->name, s->type, s->value);
+}
+
+symbol_list     symbol_list_alloc()
+{
+    symbol_list head = NULL;
+    (*head) = symbol_alloc();
+    return head;
+}
+
+symbol          symbol_list_add(symbol_list head, symbol s)
+{
+    if((*head) == NULL)
     {
-        *head = alloc_symbol();
-        (*head)->name = strdup(name);
-        return *head;
+        head = symbol_list_alloc();
     }
     else
     {
-        symbol * current  = *head;
-        // Looking for the end
+        symbol current  = *head;
         while(current->next != NULL)
             current = current->next;
-        current->next = alloc_symbol();
-        current->next->name = strdup(name);
+        current->next = s;
         return current->next;
     }
+    return s;
 }
 
-symbol * find_symbol(symbol * head, char * name)
+symbol          symbol_list_find(symbol head, symbol s)
 {
     while(head != NULL)
     {
-        if(strcmp(head->name, name) == 0)
+        if(strcmp(head->name, s->name) == 0)
             return head;
         head = head->next;
     }
     return NULL;
 }
 
-void print_symbol(symbol * head)
+void            symbol_list_print(symbol head)
 {
     printf("///////////////////\n");
     printf("// Symbol Table\n");
@@ -51,11 +66,16 @@ void print_symbol(symbol * head)
     while(head != NULL)
     {
         printf("id: %10s, is_constant : ", head->name);
-        if(head->constant)
+        if(head->type == SYMBOL_CST)
             printf("true, value: %d", head->value);
         else
             printf("false, value: N/A");
         printf("\n");
         head = head->next;
     }
+}
+
+symbol symbol_new_temp(symbol_list head)
+{
+
 }

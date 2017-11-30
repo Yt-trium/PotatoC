@@ -1,11 +1,22 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#ifndef AST_H
+#define AST_H
 
 #include "quad.h"
 
+typedef enum ast_type
+{
+    AST_NUMBER,
+    AST_ID,
+    AST_STATEMENT,
+    AST_OP_PLUS,
+    AST_OP_MINUS,
+    AST_OP_MULT,
+    AST_OP_DIVI
+
+} ast_type;
+
 typedef struct ast {
-    char* type;
+    ast_type type;
     union {
         struct {
             struct ast* left;
@@ -20,9 +31,11 @@ typedef struct ast {
     } u;
 } ast;
 
-ast* ast_new_operation(char*, ast*, ast*);
+ast* ast_new_operation(ast_type, ast*, ast*);
 ast* ast_new_statement(ast*, ast*);
 ast* ast_new_number(int);
 ast* ast_new_id(char*);
 void ast_print(ast*, int);
-struct quad* ast_codegen(ast*, struct symbol**);
+struct quad* ast_codegen(ast*, symbol_list);
+
+#endif // AST_H

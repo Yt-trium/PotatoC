@@ -1,4 +1,5 @@
 #ifndef MIPS_H
+
 #define MIPS_H
 
 #include "symbol.h"
