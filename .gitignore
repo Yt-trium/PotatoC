@@ -56,3 +56,6 @@ dkms.conf
 
 # SPIM
 spim-8.0
+
+# Valgrind
+vgcore.*

@@ -52,24 +52,26 @@ void ast_print(ast* ast, int indent) {
   }
 }
 
-struct quad* ast_codegen(ast *ast, symbol_list symbol_table)
+symbol ast_codegen(ast *ast, symbol_list symbol_table)
 {
-    quad* left;
-    quad* right;
-    quad* cg;
+    symbol left;
+    symbol right;
+    symbol res;
 
     switch(ast->type)
     {
+    case AST_NUMBER:
+        return symbol_new_temp(st, ast->u.number);
+        break;
+    case AST_ID:
+        break;
     case AST_OP_PLUS:
         left = ast_codegen(ast->u.statement.left,symbol_table);
         right = ast_codegen(ast->u.statement.right,symbol_table);
-        quad* new_code = add_quad(NULL,QUAD_OP_PLUS,cg->res, left->res , right->res);
-        /*
-        cg->result = symbol_new_temp(symbol_table);
-        cg->code = left->code;
-        quad_add(&cg->code, right->code);
-        quad_add(&cg->code, new_code);
-        */
+        res = symbol_new_temp(symbol_table, 0);
+        quad_add(ql,quad_gen(QUAD_OP_PLUS,res,left,right));
+
+        return res;
     break;
     default:
         break;

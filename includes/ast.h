@@ -3,6 +3,8 @@
 
 #include "quad.h"
 
+quad *ql;
+
 typedef enum ast_type
 {
     AST_NUMBER,
@@ -36,6 +38,6 @@ ast* ast_new_statement(ast*, ast*);
 ast* ast_new_number(int);
 ast* ast_new_id(char*);
 void ast_print(ast*, int);
-struct quad* ast_codegen(ast*, symbol_list);
+symbol ast_codegen(ast*, symbol_list);
 
 #endif // AST_H

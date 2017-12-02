@@ -17,21 +17,17 @@ typedef struct quad_{
     symbol left;
     symbol right;
     struct quad_ * next;
-} quad;
+} quad_, *quad;
 
 
-quad * alloc_quad();
-
-quad * add_quad(quad ** head, 
-                enum OpType type, 
-                symbol res,
-                symbol left,
-                symbol right);
+quad alloc_quad();
+quad quad_gen(enum OpType type, symbol res, symbol left, symbol right);
+quad quad_add(quad *head, quad q);
 
 // Append listRight to listLeft
-void append_quad(quad * listLeft, quad * listRight);
+void append_quad(quad listLeft, quad listRight);
 
-void quad_print(quad * head);
+void quad_print(quad head);
 
 
 typedef struct quad_list

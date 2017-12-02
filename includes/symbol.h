@@ -3,6 +3,8 @@
 
 #include <stdbool.h>
 
+#define SYMBOL_MAX_NAME_LENGTH 128
+
 typedef enum{
     SYMBOL_INT,
     SYMBOL_FUNC,
@@ -37,7 +39,7 @@ symbol_list     symbol_list_alloc();
  * @brief symbol_list_add
  * @return
  */
-symbol          symbol_list_add(symbol_list, symbol);
+symbol          symbol_list_add(symbol *, symbol);
 /**
  * @brief symbol_list_find
  * @return
@@ -52,6 +54,6 @@ void            symbol_list_print(symbol);
  * @brief symbol_new_temp
  * @return
  */
-symbol symbol_new_temp(symbol_list);
+symbol symbol_new_temp(symbol *, int);
 
 #endif // SYMBOL_H

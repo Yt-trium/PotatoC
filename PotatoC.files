@@ -1,9 +1,11 @@
 includes/mips.h
 includes/quad.h
+includes/quad_list.h
 includes/symbol.h
 includes/ast.h
 src/mips.c
 src/quad.c
+src/quad_list.cpp
 src/symbol.c
 src/ast.c
 lex/potatoc.l

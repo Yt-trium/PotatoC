@@ -6,10 +6,7 @@
 
   int yylex();
   void yyerror(char*);
-
-  symbol_list st;
-  struct quad **ql;
-
+  symbol *st = NULL;
 %}
 
 %union {
@@ -34,10 +31,10 @@
 %%
 
 axiom:
-    | expr END {    printf("Epression reconnue !\n");
+    | expr END {    printf("axiom -> expr ;\n");
                     ast_print($1, 0);
                     ast_codegen($1, st);}
-    | assign END {  printf("Definition reconnue !\n");
+    | assign END {  printf("axiom -> assign ;\n");
                     ast_print($1, 0);
                     ast_codegen($1, st);}
     // | axiom axiom
@@ -64,6 +61,7 @@ id: IDENTIFIER { $$ = ast_new_id($1); };
 
 
 int main() {
+  symbol_new_temp(st, 0) ;
   printf("PotatoC 1.0\n");
   return yyparse();
 }

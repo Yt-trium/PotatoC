@@ -2,53 +2,49 @@
 
 #include <stdlib.h>
 
-quad * alloc_quad()
+quad quad_alloc()
 {
-    quad * res = malloc(sizeof(quad));
-    res->id = 0;
-    res->type = QUAD_OP_PLUS;
-    res->res = NULL;
-    res->left = NULL;
-    res->right = NULL;
-    res->next = NULL;
-    return res;
+    static unsigned int countQuad = 0;
+    quad q = malloc(sizeof(quad_));
+    q->id = countQuad++;
+    q->type = QUAD_OP_PLUS;
+    q->res = NULL;
+    q->left = NULL;
+    q->right = NULL;
+    q->next = NULL;
+    return q;
 }
 
-quad * add_quad(quad ** head,
-                enum OpType type, 
-                symbol res,
-                symbol left,
-                symbol right)
+quad quad_gen(enum OpType type, symbol res, symbol left, symbol right)
 {
-    static int maxId = 0;
+    quad q = quad_alloc();
+    q->type = type;
+    q->res = res;
+    q->left = left;
+    q->right = right;
 
-    // List is empty
+    return q;
+}
+
+quad quad_add(quad *head, quad q)
+{
     if(*head == NULL)
     {
-        *head = alloc_quad();
-        (*head)->id = maxId++;
-        (*head)->res = res;
-        (*head)->left = left;
-        (*head)->right = right;
-        (*head)->type = type;
+        *head = q;
         return *head;
     }
     else
     {
-        quad * new = *head;
+        quad new = *head;
         while(new->next != NULL)
             new = new->next;
-        new->next = alloc_quad();
-        new->next->id = maxId++;
-        new->next->res = res;
-        new->next->left = left;
-        new->next->right = right;
-        new->next->type = type;
-        return new->next;
+        new->next = q;
+
+        return q;
     }
 }
 
-void append_quad(quad * listLeft, quad * listRight)
+void quad_append(quad listLeft, quad listRight)
 {
     while(listLeft->next != NULL)
         listLeft = listLeft->next;
@@ -56,7 +52,7 @@ void append_quad(quad * listLeft, quad * listRight)
     listLeft->next = listRight;
 }
 
-void quad_print(quad * head)
+void quad_print(quad head)
 {
     printf("///////////////////\n");
     printf("// quad List\n");
@@ -82,47 +78,4 @@ void quad_print(quad * head)
 
         head = head->next;
     }
-}
-
-
-void quad_list_print (quad_list *ql)
-{
-    puts((ql != NULL?"List of quads:":"quad list empty."));
-    while(ql != NULL){
-        quad_print(ql->q);
-        ql = ql->next;
-    }
-}
-
-void quad_list_complete (quad_list* list, symbol label)
-{
-    while(list != NULL) {
-        list->q->res = label;
-        list = list->next;
-    }
-}
-
-void quad_list_add(quad_list** dest, quad_list* src) {
-    if(*dest == NULL) {
-        *dest = src;
-    }
-    else {
-        quad_list* scan = *dest;
-        while(scan->next != NULL)
-            scan = scan->next;
-        scan->next = src;
-    }
-}
-
-quad_list* quad_list_new  (quad *q)
-{
-    quad_list *ql = (quad_list*)malloc(sizeof(quad_list));
-    ql->q = q;
-    ql->previous = NULL;
-    ql->next = NULL;
-    return ql;
-}
-
-void quad_list_free (quad_list *ql){
-    free(ql);
 }
