@@ -3,10 +3,12 @@ includes/quad.h
 includes/quad_list.h
 includes/symbol.h
 includes/ast.h
+includes/test.h
 src/mips.c
 src/quad.c
-src/quad_list.cpp
+src/quad_list.c
 src/symbol.c
 src/ast.c
 lex/potatoc.l
+src/test.c
 yacc/potatoc.y

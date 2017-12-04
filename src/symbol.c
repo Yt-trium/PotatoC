@@ -33,17 +33,16 @@ symbol_list     symbol_list_alloc()
 
 symbol          symbol_list_add(symbol *head, symbol s)
 {
-    symbol current = *head;
-    if(current == NULL)
+    if((*head) == NULL)
     {
         (*head) = s;
     }
     else
     {
+        symbol current = (*head);
         while(current->next != NULL)
             current = current->next;
         current->next = s;
-        return current->next;
     }
     return s;
 }
@@ -67,9 +66,11 @@ void            symbol_list_print(symbol head)
 
     while(head != NULL)
     {
-        printf("id: %10s, is_constant : ", head->name);
+        printf("id: %16s [", head->name);
         if(head->type == SYMBOL_CST)
-            printf("true, value: %d", head->value);
+            printf("SYMBOL_CST] = %d", head->value);
+        if(head->type == SYMBOL_INT)
+            printf("SYMBOL_INT] = %d", head->value);
         else
             printf("false, value: N/A");
         printf("\n");
@@ -87,7 +88,8 @@ symbol symbol_new_temp(symbol* head, int v)
     tmp->type = SYMBOL_INT;
     tmp->value = v;
 
-    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP[%ud]", cmpCount++);
+    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP[%u]", cmpCount++);
 
-    return symbol_list_add(head, tmp);
+    symbol_list_add(head, tmp);
+    return tmp;
 }

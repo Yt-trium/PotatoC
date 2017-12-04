@@ -3,10 +3,11 @@
   #include <stdlib.h>
   #include <string.h>
   #include "ast.h"
+  #include "test.h"
 
   int yylex();
   void yyerror(char*);
-  symbol *st = NULL;
+  symbol st = NULL;
 %}
 
 %union {
@@ -33,10 +34,10 @@
 axiom:
     | expr END {    printf("axiom -> expr ;\n");
                     ast_print($1, 0);
-                    ast_codegen($1, st);}
+                    ast_codegen($1, &st);}
     | assign END {  printf("axiom -> assign ;\n");
                     ast_print($1, 0);
-                    ast_codegen($1, st);}
+                    ast_codegen($1, &st);}
     // | axiom axiom
   ;
 
@@ -61,7 +62,8 @@ id: IDENTIFIER { $$ = ast_new_id($1); };
 
 
 int main() {
-  symbol_new_temp(st, 0) ;
+  test_all();
+  symbol_new_temp(&st, 0) ;
   printf("PotatoC 1.0\n");
   return yyparse();
 }

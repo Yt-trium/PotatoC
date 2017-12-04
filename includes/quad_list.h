@@ -3,6 +3,7 @@
 
 #include "quad.h"
 
+/*
 typedef struct quad_list
 {
     quad *q;
@@ -16,7 +17,7 @@ void        quad_list_free(quad_list*);
 void        quad_list_complete(quad_list*, symbol);
 void        quad_list_add(quad_list**, quad_list*);
 void        quad_list_print (quad_list *);
-
+*/
 
 
 #endif // QUAD_LIST_H

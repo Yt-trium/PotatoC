@@ -1,7 +1,6 @@
 #include "quad_list.h"
 
-
-
+/*
 void quad_list_print (quad_list *ql)
 {
     puts((ql != NULL?"List of quads:":"quad list empty."));
@@ -43,3 +42,4 @@ quad_list* quad_list_new  (quad *q)
 void quad_list_free (quad_list *ql){
     free(ql);
 }
+*/

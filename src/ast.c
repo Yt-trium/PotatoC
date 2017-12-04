@@ -52,7 +52,7 @@ void ast_print(ast* ast, int indent) {
   }
 }
 
-symbol ast_codegen(ast *ast, symbol_list symbol_table)
+symbol ast_codegen(ast *ast, symbol* symbol_table)
 {
     symbol left;
     symbol right;
@@ -61,7 +61,7 @@ symbol ast_codegen(ast *ast, symbol_list symbol_table)
     switch(ast->type)
     {
     case AST_NUMBER:
-        return symbol_new_temp(st, ast->u.number);
+        return symbol_new_temp(symbol_table, ast->u.number);
         break;
     case AST_ID:
         break;
