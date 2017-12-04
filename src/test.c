@@ -16,7 +16,7 @@ int test_all()
 
     ast_print(n123,0);
 
-    symbol symbol_table = NULL;
+    symbol  symbol_table = NULL;
 
     symbol_new_temp(&symbol_table, 0);
     symbol_new_temp(&symbol_table, 2);
@@ -24,9 +24,9 @@ int test_all()
     symbol_list_print(symbol_table);
 
     // gen code from AST
-    // ast_codegen(n123,&symbol_table);
+    quad    quad_list = NULL;
 
-
+    ast_codegen(n123,&symbol_table);
 
     printf(".------- END ------.\n");
     return 0;

@@ -38,6 +38,6 @@ ast* ast_new_statement(ast*, ast*);
 ast* ast_new_number(int);
 ast* ast_new_id(char*);
 void ast_print(ast*, int);
-symbol ast_codegen(ast*, symbol_list);
+quad ast_codegen(ast*, symbol*);
 
 #endif // AST_H

@@ -52,7 +52,7 @@ void ast_print(ast* ast, int indent) {
   }
 }
 
-symbol ast_codegen(ast *ast, symbol* symbol_table)
+quad ast_codegen(ast *ast, symbol* symbol_table)
 {
     symbol left;
     symbol right;
@@ -61,7 +61,9 @@ symbol ast_codegen(ast *ast, symbol* symbol_table)
     switch(ast->type)
     {
     case AST_NUMBER:
-        return symbol_new_temp(symbol_table, ast->u.number);
+        // oui mais non
+        //symbol tmp = symbol_new_temp(symbol_table, 0);
+        //return quad_add(&quad_list, quad_gen(QUAD_OP_PLUS, tmp, left, right));
         break;
     case AST_ID:
         break;
