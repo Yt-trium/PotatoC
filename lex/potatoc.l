@@ -24,6 +24,8 @@ number     [1-9][0-9]*
 "return"                { return(RETURN); }
 
 "="                     { return(ASSIGN); }
+"++"                    { return(INC); }
+"--"                    { return(DEC); }
 "+"                     { return(PLUS); }
 "-"                     { return(MINUS); }
 "*"                     { return(MULT); }

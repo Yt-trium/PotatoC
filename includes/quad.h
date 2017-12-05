@@ -9,7 +9,8 @@ enum OpType{
     QUAD_OP_MULT,
     QUAD_OP_DIVI,
     QUAD_UOP_ASSIGN,
-    QUAD_UOP_MINUS
+    QUAD_UOP_MINUS,
+    QUAD_UOP_PLUS
 };
 
 typedef struct quad_{

@@ -76,6 +76,7 @@ void quad_print(quad q)
     switch (q->type)
     {
         case QUAD_OP_PLUS:
+        case QUAD_UOP_PLUS:
             printf("+"); break;
         case QUAD_OP_MINUS:
         case QUAD_UOP_MINUS:

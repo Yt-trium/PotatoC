@@ -59,6 +59,7 @@ symbol symbol_find(symbol head, char * name)
             return head;
         head = head->next;
     }
+    fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", name);
     return NULL;
 }
 

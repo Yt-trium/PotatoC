@@ -22,16 +22,16 @@
 
 %token <value> INT STENCIL
 %token <value> IF ELSE WHILE FOR RETURN
-%token <value> CONSTANT ASSIGN PLUS MINUS MULT DIVI
+%token <value> CONSTANT ASSIGN PLUS MINUS MULT DIVI INC DEC
 %token <value> END
 %token <string> IDENTIFIER
 
 %type <sym> expr instr assign
 
-%left PLUS
-%left MINUS
-%left MULT
-%left DIVI
+%right ASSIGN
+%left PLUS MINUS
+%left MULT DIVI
+%left INC DEC
 
 %start axiom
 
@@ -56,43 +56,72 @@ assign:
 
 expr:
     expr PLUS expr  { 
-    //$$ = ast_new_operation(AST_OP_PLUS, $1, $3);
-    $$ = symbol_new_temp(&st);
-    quad_add(&qt, quad_gen(QUAD_OP_PLUS, $$, $1, $3));
-    }
-  | expr MINUS expr { 
-  //$$ = ast_new_operation(AST_OP_MINUS, $1, $3);
-    $$ = symbol_new_temp(&st);
-    quad_add(&qt, quad_gen(QUAD_OP_MINUS, $$, $1, $3));
-  }
-  | expr MULT expr  { 
-  //$$ = ast_new_operation(AST_OP_MULT, $1, $3); 
-    $$ = symbol_new_temp(&st);
-    quad_add(&qt, quad_gen(QUAD_OP_MULT, $$, $1, $3));
-  }
+        //$$ = ast_new_operation(AST_OP_PLUS, $1, $3);
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_PLUS, $$, $1, $3));
+        }
+  | PLUS expr {
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, $$, $2));
+      }
+  | expr MINUS expr {
+      //$$ = ast_new_operation(AST_OP_MINUS, $1, $3);
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_MINUS, $$, $1, $3));
+      }
+  | MINUS expr {
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_MINUS, $$, $2));
+      }
+  | INC IDENTIFIER  {
+        $$ = symbol_find(st, $2);
+        if($$ == NULL)
+        {
+            YYABORT;
+        }
+        symbol one = symbol_new_const(&st, 1);
+        symbol add = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, $$, one));
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, add));
+      }
+  | DEC IDENTIFIER  {
+        $$ = symbol_find(st, $2);
+        if($$ == NULL)
+        {
+            YYABORT;
+        }
+        symbol one = symbol_new_const(&st, 1);
+        symbol sub = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, $$, one));
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, sub));
+      }
+  | expr MULT expr  {
+      //$$ = ast_new_operation(AST_OP_MULT, $1, $3);
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_MULT, $$, $1, $3));
+      }
   | expr DIVI expr  { 
-  //$$ = ast_new_operation(AST_OP_DIVI, $1, $3); 
-    $$ = symbol_new_temp(&st);
-    quad_add(&qt, quad_gen(QUAD_OP_DIVI, $$, $1, $3));
-  }
+      //$$ = ast_new_operation(AST_OP_DIVI, $1, $3);
+        $$ = symbol_new_temp(&st);
+        quad_add(&qt, quad_gen(QUAD_OP_DIVI, $$, $1, $3));
+      }
   | '(' expr ')'    { 
-    $$ = $2; 
-  }
+        $$ = $2;
+      }
   | IDENTIFIER      { 
         $$ = symbol_find(st, $1);
         if($$ == NULL)
         {
-            fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", $1);
             YYABORT;
         }
-  //$$ = ast_new_id($1); 
-  }
-  | CONSTANT        { 
-    //$$ = ast_new_number($1); 
-    //$$ = add_symbol(&head_symbol, "Number");
-    $$ = symbol_new_const(&st, $1);
-  }
-  ;
+          //$$ = ast_new_id($1);
+      }
+  | CONSTANT        {
+        //$$ = ast_new_number($1);
+        //$$ = add_symbol(&head_symbol, "Number");
+        $$ = symbol_new_const(&st, $1);
+      }
+      ;
 
 %%
 
