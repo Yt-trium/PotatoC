@@ -24,13 +24,6 @@ void            symbol_print(symbol s)
         printf("%s %d %d", s->name, s->type, s->value);
 }
 
-symbol_list     symbol_list_alloc()
-{
-    symbol_list head = NULL;
-    (*head) = symbol_alloc();
-    return head;
-}
-
 symbol          symbol_list_add(symbol *head, symbol s)
 {
     if((*head) == NULL)

@@ -5,6 +5,6 @@
 #include "symbol.h"
 #include "quad.h"
 
-void toMips(symbol_list, quad*);
+//void toMips(symbol_list, quad*);
 
 #endif // MIPS_H
