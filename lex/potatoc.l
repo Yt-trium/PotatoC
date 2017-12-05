@@ -18,6 +18,14 @@ number     [1-9][0-9]*
 "for"                   { return(FOR); }
 "while"                 { return(WHILE); }
 
+"=="                    { return EQUAL; }
+"&&"                    { return AND; }
+"||"                    { return OR; }
+"!"                     { return NOT; }
+
+"true"                  { return TRUE; }
+"false"                 { return FALSE; }
+
 "int"                   { return(INT); }
 "stencil"               { return(STENCIL); }
 
@@ -32,6 +40,7 @@ number     [1-9][0-9]*
 "/"                     { return(DIVI); }
 ";"                     { return(END); }
 [()]                    { return yytext[0]; }
+[{}]                    { return yytext[0]; }
 
 {number}                { yylval.value = atoi(yytext); return CONSTANT; }
 {identifier}            { yylval.string = strdup(yytext); return IDENTIFIER; }

@@ -21,14 +21,19 @@
   struct symbol_* sym;
 }
 
-%token <value> INT STENCIL
-%token <value> IF ELSE WHILE FOR RETURN
-%token <value> CONSTANT ASSIGN PLUS MINUS MULT DIVI INC DEC
-%token <value> END
+%token INT STENCIL
+%token IF ELSE WHILE FOR RETURN
+%token ASSIGN PLUS MINUS MULT DIVI INC DEC END
+%token TRUE FALSE OR AND NOT EQUAL
+
+%token <value> CONSTANT
 %token <string> IDENTIFIER
 
-%type <sym> expr instr assign
+%type <sym> expr assign
 
+%left OR
+%left AND
+%left NOT
 %right ASSIGN
 %left PLUS MINUS
 %left MULT DIVI
