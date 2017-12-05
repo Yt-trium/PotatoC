@@ -40,3 +40,9 @@ number     [1-9][0-9]*
 .                       { printf("Caractere inconnu: %s", yytext); }
 
 %%
+
+// Free the memory allocated for Lex when we are done.
+void lex_free() {
+  yy_delete_buffer(YY_CURRENT_BUFFER);
+  free(yy_buffer_stack);
+}

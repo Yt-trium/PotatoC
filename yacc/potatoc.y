@@ -8,6 +8,7 @@
   #include "quad.h"
 
   int yylex();
+  void lex_free();
   void yyerror(char*);
   symbol st = NULL;
   quad_list qt = NULL;
@@ -38,11 +39,13 @@
 %%
 
 axiom:
-     instr END axiom
-    | instr
-  ;
+  statement_list END
 
-instr:
+statement_list:
+  statement_list END statement
+  | statement
+
+statement:
      assign
      | expr
 
@@ -141,6 +144,7 @@ int main() {
   printf("Cleaning...");
   quad_free_memory(qt);
   symbol_free_memory(st);
+  lex_free();
   printf("OK\n");
   return status;
 }
