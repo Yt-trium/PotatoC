@@ -51,6 +51,17 @@ symbol          symbol_list_find(symbol head, symbol s)
     return NULL;
 }
 
+symbol symbol_find(symbol head, char * name)
+{
+    while(head != NULL)
+    {
+        if(head->type == SYMBOL_ID && strcmp(head->name, name) == 0)
+            return head;
+        head = head->next;
+    }
+    return NULL;
+}
+
 void            symbol_list_print(symbol head)
 {
     printf("///////////////////\n");
@@ -107,3 +118,4 @@ symbol symbol_new_const(symbol* head, int v)
     tmp->type = SYMBOL_CST;
     return tmp;
 }
+

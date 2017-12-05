@@ -26,7 +26,7 @@
 %token <value> END
 %token <string> IDENTIFIER
 
-%type <sym> expr instr assign id
+%type <sym> expr instr assign
 
 %left PLUS
 %left MINUS
@@ -47,7 +47,7 @@ instr:
      | expr
 
 assign:
-    id ASSIGN expr    { 
+    IDENTIFIER ASSIGN expr    {
     $$ = symbol_new(&st, $1);
     quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
     //$$ = ast_new_statement($1, $3);
@@ -79,6 +79,12 @@ expr:
     $$ = $2; 
   }
   | IDENTIFIER      { 
+        $$ = symbol_find(st, $1);
+        if($$ == NULL)
+        {
+            fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", $1);
+            YYABORT;
+        }
   //$$ = ast_new_id($1); 
   }
   | CONSTANT        { 
@@ -88,18 +94,22 @@ expr:
   }
   ;
 
-id: IDENTIFIER { 
-  //$$ = ast_new_id($1); 
-  };
-
 %%
 
 int main() {
-  printf("PotatoC 1.0\n");
-  yyparse();
+
+  printf("PotatoC\n");
+
+  int status = yyparse();
+
+  printf("YACC Exit code: %d\n", status);
+
   printf("Parsing over.\n");
   symbol_list_print(st);
   quad_list_print(qt);
   printf("Debug over.\n");
-  return 0;
+
+  printf("Cleaning...");
+  printf("OK\n");
+  return status;
 }

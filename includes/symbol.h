@@ -42,6 +42,12 @@ symbol          symbol_list_add(symbol *, symbol);
 symbol          symbol_list_find(symbol, symbol);
 
 /**
+ * @brief Find a symbol with the specified name in the list
+ * @return      The symbol or NULL
+ */
+symbol symbol_find(symbol, char*);
+
+/**
  * @brief symbol_list_print
  */
 void            symbol_list_print(symbol);
