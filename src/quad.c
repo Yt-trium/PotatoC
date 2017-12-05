@@ -1,6 +1,7 @@
 #include "quad.h"
 
 #include <stdlib.h>
+#include <stdio.h>
 
 quad quad_alloc()
 {
@@ -24,6 +25,17 @@ quad quad_gen(enum OpType type, symbol res, symbol left, symbol right)
     q->right = right;
 
     return q;
+}
+
+quad quad_unary_gen(enum OpType type, symbol res, symbol right)
+{
+    quad q = quad_alloc();
+    q->type = type;
+    q->res = res;
+    q->right = right;
+
+    return q;
+
 }
 
 quad_list quad_add(quad_list *head, quad q)
@@ -65,19 +77,34 @@ void quad_print(quad q)
         case QUAD_OP_PLUS:
             printf("+"); break;
         case QUAD_OP_MINUS:
+        case QUAD_UOP_MINUS:
             printf("-"); break;
         case QUAD_OP_MULT:
             printf("*"); break;
         case QUAD_OP_DIVI:
             printf("/"); break;
+        case QUAD_UOP_ASSIGN:
+            printf("="); break;
         default:
             break;
     }
+    printf("Q Type: %d\n", q->type);
 
-    printf(", res: %5s, left: %5s, right: %5s\n",
-            q->res->name,
-            q->left->name,
-            q->right->name);
+    // If unary
+    if(q->type >= 500)
+    {
+        printf(", res: %5s, right: %5s\n",
+                q->res->name,
+                q->right->name);
+    }
+    else // binary
+    {
+        printf(", res: %5s, left: %5s, right: %5s\n",
+                q->res->name,
+                q->left->name,
+                q->right->name);
+    }
+
 }
 
 quad_list quad_list_alloc()

@@ -4,10 +4,12 @@
 #include "symbol.h"
 
 enum OpType{
-    QUAD_OP_PLUS,
-    QUAD_OP_MINUS,
-    QUAD_OP_MULT,
-    QUAD_OP_DIVI
+    QUAD_OP_PLUS = 0,
+    QUAD_OP_MINUS = 1,
+    QUAD_OP_MULT = 2,
+    QUAD_OP_DIVI = 3,
+    QUAD_UOP_ASSIGN = 500,
+    QUAD_UOP_MINUS = 501
 };
 
 typedef struct quad_{
@@ -40,6 +42,15 @@ quad alloc_quad();
   * @return             The generated quad
   */
 quad quad_gen(enum OpType type, symbol res, symbol left, symbol right);
+
+/**
+  * Generate a new quad for an unary operation
+  * @param      Type of the operation
+  * @param      Output symbol
+  * @param      Right symbol
+  * @return     The generated quad
+  */
+quad quad_unary_add(enum OpType type, symbol res, symbol right);
 
 /**
   * Add a quad in the list

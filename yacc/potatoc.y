@@ -48,6 +48,8 @@ instr:
 
 assign:
     id ASSIGN expr    { 
+    $$ = symbol_new(&st, $1);
+    quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
     //$$ = ast_new_statement($1, $3); 
     }
     ;

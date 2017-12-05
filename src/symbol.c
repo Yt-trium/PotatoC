@@ -64,11 +64,25 @@ void            symbol_list_print(symbol head)
             printf("[SYMBOL_CST] = %d", head->value);
         else if(head->type == SYMBOL_INT)
             printf("[SYMBOL_INT]");
+        else if(head->type == SYMBOL_ID)
+            printf("[SYMBOL_ID]");
         else
             printf("false, value: N/A");
         printf("\n");
         head = head->next;
     }
+}
+
+symbol symbol_new(symbol * head, char * name)
+{
+    symbol tmp = symbol_alloc();
+
+    tmp->name = strdup(name);
+    tmp->type = SYMBOL_ID;
+    tmp->value = 0;
+
+    symbol_list_add(head, tmp);
+    return tmp;
 }
 
 symbol symbol_new_temp(symbol* head)
@@ -77,7 +91,6 @@ symbol symbol_new_temp(symbol* head)
     symbol tmp = symbol_alloc();
 
     tmp->name = malloc(SYMBOL_MAX_NAME_LENGTH);
-    tmp->next = NULL;
     tmp->type = SYMBOL_INT;
     tmp->value = 0;
 

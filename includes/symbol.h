@@ -7,7 +7,8 @@
 typedef enum{
     SYMBOL_INT,
     SYMBOL_FUNC,
-    SYMBOL_CST
+    SYMBOL_CST,
+    SYMBOL_ID
 } symbol_type;
 
 typedef struct symbol_{
@@ -44,6 +45,13 @@ symbol          symbol_list_find(symbol, symbol);
  * @brief symbol_list_print
  */
 void            symbol_list_print(symbol);
+
+/**
+  * Create a new symbol with a given name
+  * @param  The head of the symbol list
+  * @param  The name of the symbol
+  */
+symbol symbol_new(symbol *, char *);
 
 /**
  * @brief symbol_new_temp
