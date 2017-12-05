@@ -12,6 +12,11 @@
   void yyerror(char*);
   symbol st = NULL;
   quad_list qt = NULL;
+
+  struct bool_expr_{
+      quad_list truelist;
+      quad_list falselist;
+  };
 %}
 
 %union {
@@ -19,6 +24,7 @@
   int value;
   struct ast* ast;
   struct symbol_* sym;
+  struct bool_expr_ *cond;
 }
 
 %token INT STENCIL
@@ -29,6 +35,7 @@
 %token <value> CONSTANT
 %token <string> IDENTIFIER
 
+%type <cond> condition
 %type <sym> expr assign
 
 %left OR
@@ -48,7 +55,7 @@ axiom:
 
 statement_list:
   statement_list END statement
-  | statement END
+  | statement
 
 statement:
   assign
