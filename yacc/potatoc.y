@@ -48,19 +48,23 @@ axiom:
 
 statement_list:
   statement_list END statement
-  | statement
+  | statement END
 
 statement:
-     assign
-     | expr
+  assign
+  | expr
+  | IF '(' condition ')' statement {
+      printf("If condition ! \n");
+  }
+
 
 assign:
     IDENTIFIER ASSIGN expr    {
-    $$ = symbol_new(&st, $1);
-    quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
-    //$$ = ast_new_statement($1, $3);
-    }
-    ;
+        $$ = symbol_new(&st, $1);
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
+        //$$ = ast_new_statement($1, $3);
+        }
+  ;
 
 expr:
     expr PLUS expr  { 
@@ -130,6 +134,36 @@ expr:
         $$ = symbol_new_const(&st, $1);
       }
       ;
+
+condition:
+    expr EQUAL expr
+    {
+        printf("Is $1 equal to $2 ?\n");
+    }
+  | TRUE
+    {
+    }
+  | FALSE
+    {
+    }
+  | condition OR tag condition
+    {
+    }
+  | condition AND tag condition
+    {
+    }
+  | NOT condition
+    {
+    }
+  | '(' condition ')'
+    {
+    }
+;
+
+tag:
+    {
+    }
+  ;
 
 %%
 
