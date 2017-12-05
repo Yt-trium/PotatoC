@@ -57,6 +57,9 @@ assign:
 expr:
     expr PLUS expr  { 
     //$$ = ast_new_operation(AST_OP_PLUS, $1, $3);
+    symbol * s = symbol_new_temp(&st);
+    $$ = s;
+    //add_quad(&head_quad, PLUS, s, $1, $3);
     }
   | expr MINUS expr { 
   //$$ = ast_new_operation(AST_OP_MINUS, $1, $3);
@@ -68,7 +71,7 @@ expr:
   //$$ = ast_new_operation(AST_OP_DIVI, $1, $3); 
   }
   | '(' expr ')'    { 
-  //$$ = $2; 
+    $$ = $2; 
   }
   | IDENTIFIER      { 
   //$$ = ast_new_id($1); 
@@ -76,7 +79,7 @@ expr:
   | CONSTANT        { 
     //$$ = ast_new_number($1); 
     //$$ = add_symbol(&head_symbol, "Number");
-    $$ = symbol_new_temp(&st, $1);
+    $$ = symbol_new_const(&st, $1);
   }
   ;
 

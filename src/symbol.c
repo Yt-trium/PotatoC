@@ -61,9 +61,9 @@ void            symbol_list_print(symbol head)
     {
         printf("id: %16s [", head->name);
         if(head->type == SYMBOL_CST)
-            printf("SYMBOL_CST] = %d", head->value);
-        if(head->type == SYMBOL_INT)
-            printf("SYMBOL_INT] = %d", head->value);
+            printf("[SYMBOL_CST] = %d", head->value);
+        else if(head->type == SYMBOL_INT)
+            printf("[SYMBOL_INT]");
         else
             printf("false, value: N/A");
         printf("\n");
@@ -71,19 +71,26 @@ void            symbol_list_print(symbol head)
     }
 }
 
-symbol symbol_new_temp(symbol* head, int v)
+symbol symbol_new_temp(symbol* head)
 {
-    printf("Generate new temp %d\n", v);
     static unsigned int cmpCount = 0;
     symbol tmp = symbol_alloc();
 
     tmp->name = malloc(SYMBOL_MAX_NAME_LENGTH);
     tmp->next = NULL;
     tmp->type = SYMBOL_INT;
-    tmp->value = v;
+    tmp->value = 0;
 
     snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP_%u", cmpCount++);
 
     symbol_list_add(head, tmp);
+    return tmp;
+}
+
+symbol symbol_new_const(symbol* head, int v)
+{
+    symbol tmp = symbol_new_temp(head);
+    tmp->value = v;
+    tmp->type = SYMBOL_CST;
     return tmp;
 }

@@ -49,6 +49,12 @@ void            symbol_list_print(symbol);
  * @brief symbol_new_temp
  * @return
  */
-symbol symbol_new_temp(symbol *, int);
+symbol symbol_new_temp(symbol *);
+
+/**
+ * @brief Create a new symbol for a const
+ * @return
+ */
+symbol symbol_new_const(symbol *, int);
 
 #endif // SYMBOL_H
