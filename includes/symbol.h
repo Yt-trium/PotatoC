@@ -1,6 +1,5 @@
 #ifndef SYMBOL_H
 #define SYMBOL_H
-
 #include <stdbool.h>
 
 #define SYMBOL_MAX_NAME_LENGTH 128
@@ -25,6 +24,7 @@ typedef symbol* symbol_list;
  * @return
  */
 symbol          symbol_alloc();
+
 /**
  * @brief symbol_print print a symbol
  */
@@ -35,16 +35,19 @@ void            symbol_print(symbol);
  * @return
  */
 symbol_list     symbol_list_alloc();
+
 /**
  * @brief symbol_list_add
  * @return
  */
 symbol          symbol_list_add(symbol *, symbol);
+
 /**
  * @brief symbol_list_find
  * @return
  */
 symbol          symbol_list_find(symbol, symbol);
+
 /**
  * @brief symbol_list_print
  */
