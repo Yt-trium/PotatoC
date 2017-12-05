@@ -27,27 +27,6 @@ $(DIR):
 bin/%.o: src/%.c
 	$(C_COMPILER) -o $@ -c $< $(CFLAGS)
 
-# Parser
-
-bin/parser: yacc/parser.y lex/parser.l $(OBJS)
-	yacc -v -d yacc/parser.y -o build/y.parser.c
-	flex -o build/parser.yy.c lex/parser.l
-	$(C_COMPILER) $(CFLAGS) build/y.parser.c build/parser.yy.c $(OBJS) $(LFLAGS) -o $@
-
-# Expr
-
-bin/expr: yacc/expr.y lex/expr.l $(OBJS)
-	yacc -v -d yacc/expr.y -o build/y.expr.c
-	flex -o build/expr.yy.c lex/expr.l
-	$(C_COMPILER) $(CFLAGS) build/y.expr.c build/expr.yy.c $(OBJS) $(LFLAGS) -o $@
-
-# Calc
-
-bin/calc: yacc/calc.y lex/calc.l $(OBJS)
-	yacc -v -d yacc/calc.y -o build/y.calc.c
-	flex -o build/calc.yy.c lex/calc.l
-	$(C_COMPILER) $(CFLAGS) build/y.calc.c build/calc.yy.c $(OBJS) $(LFLAGS) -o $@
-
 # PotatoC
 
 bin/potatoc: yacc/potatoc.y lex/potatoc.l $(OBJS)
