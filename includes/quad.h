@@ -18,11 +18,11 @@ typedef struct quad_{
     symbol right;
 } quad_, *quad;
 
-typedef struct quad_list
+typedef struct quad_list_
 {
     quad q;
-    struct quad_list *previous;
-    struct quad_list *next;
+    struct quad_list_ *previous;
+    struct quad_list_ *next;
 }quad_list_, *quad_list;
 
 /**

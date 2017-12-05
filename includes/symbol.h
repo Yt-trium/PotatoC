@@ -17,8 +17,6 @@ typedef struct symbol_{
     struct symbol_* next;
 } symbol_, *symbol;
 
-typedef symbol* symbol_list;
-
 /**
  * @brief symbol_alloc alloc a default symbol
  * @return
@@ -29,12 +27,6 @@ symbol          symbol_alloc();
  * @brief symbol_print print a symbol
  */
 void            symbol_print(symbol);
-
-/**
- * @brief symbol_list_alloc alloc a default list
- * @return
- */
-symbol_list     symbol_list_alloc();
 
 /**
  * @brief symbol_list_add
