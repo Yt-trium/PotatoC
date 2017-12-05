@@ -127,3 +127,20 @@ void quad_list_print(quad_list head)
     }
 
 }
+
+void quad_free_memory(quad_list head)
+{
+    while(head != NULL)
+    {
+        quad_list next = head->next;
+
+        if(head->q != NULL)
+        {
+            free(head->q);
+        }
+        free(head);
+
+        head = next;
+    }
+
+}

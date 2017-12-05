@@ -110,6 +110,8 @@ int main() {
   printf("Debug over.\n");
 
   printf("Cleaning...");
+  quad_free_memory(qt);
+  symbol_free_memory(st);
   printf("OK\n");
   return status;
 }

@@ -81,6 +81,11 @@ quad_list quad_list_alloc();
   */
 void quad_list_print (quad_list);
 
+/**
+ * @brief quad_free_memory
+ */
+void quad_free_memory(quad_list);
+
 quad_list*  quad_list_new(quad*);
 void        quad_list_free(quad_list*);
 void        quad_list_complete(quad_list*, symbol);

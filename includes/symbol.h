@@ -71,4 +71,10 @@ symbol symbol_new_temp(symbol *);
  */
 symbol symbol_new_const(symbol *, int);
 
+/**
+ * @brief clean_symbol_list
+ * @param head
+ */
+void symbol_free_memory(symbol head);
+
 #endif // SYMBOL_H

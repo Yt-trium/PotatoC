@@ -119,3 +119,19 @@ symbol symbol_new_const(symbol* head, int v)
     return tmp;
 }
 
+
+void symbol_free_memory(symbol head)
+{
+    // Clean from start to end
+    while(head != NULL)
+    {
+        symbol next = head->next;
+
+        if(head->name != NULL)
+            free(head->name);
+
+        free(head);
+
+        head = next;
+    }
+}
