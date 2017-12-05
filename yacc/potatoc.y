@@ -26,27 +26,25 @@
 %token <value> END
 %token <string> IDENTIFIER
 
-%type <ast> assign id
-%type <sym> expr
+%type <sym> expr instr assign id
 
 %left PLUS
 %left MINUS
 %left MULT
 %left DIVI
 
+%start axiom
+
 %%
 
 axiom:
-    | expr END {    printf("axiom -> expr ;\n");
-                    //ast_print($1, 0);
-                    //ast_codegen($1, &st);
-                    }
-    | assign END {  printf("axiom -> assign ;\n");
-                    //ast_print($1, 0);
-                    //ast_codegen($1, &st);
-                    }
-    // | axiom axiom
+     instr END axiom
+    | instr
   ;
+
+instr:
+     assign
+     | expr
 
 assign:
     id ASSIGN expr    { 
