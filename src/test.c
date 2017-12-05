@@ -18,8 +18,8 @@ int test_all()
 
     symbol  symbol_table = NULL;
 
-    symbol_new_temp(&symbol_table, 0);
-    symbol_new_temp(&symbol_table, 2);
+    //symbol_new_temp(&symbol_table, 0);
+    //symbol_new_temp(&symbol_table, 2);
 
     symbol_list_print(symbol_table);
 

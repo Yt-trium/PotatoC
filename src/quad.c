@@ -33,6 +33,7 @@ quad quad_unary_gen(enum OpType type, symbol res, symbol right)
     q->type = type;
     q->res = res;
     q->right = right;
+    q->left = NULL;
 
     return q;
 
@@ -88,10 +89,9 @@ void quad_print(quad q)
         default:
             break;
     }
-    printf("Q Type: %d\n", q->type);
 
     // If unary
-    if(q->type >= 500)
+    if(q->type >= QUAD_UOP_ASSIGN)
     {
         printf(", res: %5s, right: %5s\n",
                 q->res->name,

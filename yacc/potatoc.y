@@ -50,7 +50,7 @@ assign:
     id ASSIGN expr    { 
     $$ = symbol_new(&st, $1);
     quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
-    //$$ = ast_new_statement($1, $3); 
+    //$$ = ast_new_statement($1, $3);
     }
     ;
 
@@ -100,5 +100,6 @@ int main() {
   printf("Parsing over.\n");
   symbol_list_print(st);
   quad_list_print(qt);
+  printf("Debug over.\n");
   return 0;
 }

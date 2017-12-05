@@ -70,7 +70,7 @@ quad ast_codegen(ast *ast, symbol* symbol_table)
     case AST_OP_PLUS:
         left = ast_codegen(ast->u.statement.left,symbol_table);
         right = ast_codegen(ast->u.statement.right,symbol_table);
-        res = symbol_new_temp(symbol_table, 0);
+        //res = symbol_new_temp(symbol_table, 0);
         quad_add(ql,quad_gen(QUAD_OP_PLUS,res,left,right));
 
         return res;
