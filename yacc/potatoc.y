@@ -4,10 +4,12 @@
   #include <string.h>
   #include "ast.h"
   #include "test.h"
+  #include "quad.h"
 
   int yylex();
   void yyerror(char*);
   symbol st = NULL;
+  //quad * qt = NULL;
 %}
 
 %union {
@@ -57,13 +59,12 @@ expr:
 
 id: IDENTIFIER { $$ = ast_new_id($1); };
 
-
 %%
 
-
 int main() {
-  test_all();
-  symbol_new_temp(&st, 0) ;
   printf("PotatoC 1.0\n");
-  return yyparse();
+  yyparse();
+  symbol_list_print(st);
+  //quad_print(qt);
+  return 0;
 }
