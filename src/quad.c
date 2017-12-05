@@ -12,6 +12,8 @@ quad quad_alloc()
     q->res = NULL;
     q->left = NULL;
     q->right = NULL;
+    q->dest = NULL;
+    q->cmp = QUAD_RELOP_EQUAL;
     return q;
 }
 
@@ -35,6 +37,24 @@ quad quad_unary_gen(enum OpType type, symbol res, symbol right)
     q->right = right;
     q->left = NULL;
 
+    return q;
+
+}
+
+quad quad_ifgoto_gen(symbol left, enum RelOp op, symbol right)
+{
+    quad q = quad_alloc();
+    q->type = QUAD_GOTO_IF;
+    q->cmp = op;
+    q->left = left;
+    q->right = right;
+    return q;
+}
+
+quad quad_goto_gen()
+{
+    quad q = quad_alloc();
+    q->type = QUAD_GOTO;
     return q;
 
 }
@@ -71,40 +91,68 @@ void quad_append(quad listLeft, quad listRight)
 
 void quad_print(quad q)
 {
-    printf("id: %4d, operator: ", q->id);
+    printf("id: %4d, ", q->id);
 
-    switch (q->type)
+    if(q->type <= QUAD_UOP_PLUS)
     {
-        case QUAD_OP_PLUS:
-        case QUAD_UOP_PLUS:
-            printf("+"); break;
-        case QUAD_OP_MINUS:
-        case QUAD_UOP_MINUS:
-            printf("-"); break;
-        case QUAD_OP_MULT:
-            printf("*"); break;
-        case QUAD_OP_DIVI:
-            printf("/"); break;
-        case QUAD_UOP_ASSIGN:
-            printf("="); break;
-        default:
-            break;
+        printf("operator: ");
+        switch (q->type)
+        {
+            case QUAD_OP_PLUS:
+            case QUAD_UOP_PLUS:
+                printf("+"); break;
+            case QUAD_OP_MINUS:
+            case QUAD_UOP_MINUS:
+                printf("-"); break;
+            case QUAD_OP_MULT:
+                printf("*"); break;
+            case QUAD_OP_DIVI:
+                printf("/"); break;
+            case QUAD_UOP_ASSIGN:
+                printf("="); break;
+            default:
+                break;
+        }
+        // If unary
+        if(q->type >= QUAD_UOP_ASSIGN)
+        {
+            printf(", res: %5s, right: %5s\n",
+                   q->res->name,
+                   q->right->name);
+        }
+        else // binary
+        {
+            printf(", res: %5s, left: %5s, right: %5s\n",
+                   q->res->name,
+                   q->left->name,
+                   q->right->name);
+        }
+    }
+    else // GOto
+    {
+        if(q->type == QUAD_GOTO_IF)
+        {
+            printf("IF %5s ", q->left->name);
+            switch (q->cmp) {
+            case QUAD_RELOP_EQUAL:
+                printf("==");
+                break;
+            default:
+                break;
+            }
+            printf(" %5s -> ", q->right->name);
+        }
+        printf("Goto -> ");
+        if(q->dest == NULL){
+            printf("NULL QUAD");
+        }
+        else
+        {
+            printf("QUAD %5d\n", q->dest->id);
+        }
     }
 
-    // If unary
-    if(q->type >= QUAD_UOP_ASSIGN)
-    {
-        printf(", res: %5s, right: %5s\n",
-                q->res->name,
-                q->right->name);
-    }
-    else // binary
-    {
-        printf(", res: %5s, left: %5s, right: %5s\n",
-                q->res->name,
-                q->left->name,
-                q->right->name);
-    }
+
 
 }
 

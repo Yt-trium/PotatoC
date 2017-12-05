@@ -12,6 +12,7 @@
   void yyerror(char*);
   symbol st = NULL;
   quad_list qt = NULL;
+  quad nextquad = NULL;
 
   struct bool_expr_{
       quad_list truelist;
@@ -24,6 +25,7 @@
   int value;
   struct ast* ast;
   struct symbol_* sym;
+  struct quad_* qua;
   struct bool_expr_ *cond;
 }
 
@@ -36,6 +38,7 @@
 %token <string> IDENTIFIER
 
 %type <cond> condition
+%type <qua> tag
 %type <sym> expr assign
 
 %left OR
@@ -60,7 +63,7 @@ statement_list:
 statement:
   assign
   | expr
-  | IF '(' condition ')' statement {
+  | IF '(' condition ')' tag statement {
       printf("If condition ! \n");
   }
 
@@ -68,7 +71,7 @@ statement:
 assign:
     IDENTIFIER ASSIGN expr    {
         $$ = symbol_new(&st, $1);
-        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
+        nextquad = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
         //$$ = ast_new_statement($1, $3);
         }
   ;
@@ -77,16 +80,16 @@ expr:
     expr PLUS expr  { 
         //$$ = ast_new_operation(AST_OP_PLUS, $1, $3);
         $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_PLUS, $$, $1, $3));
+        nextquad = quad_add(&qt, quad_gen(QUAD_OP_PLUS, $$, $1, $3));
         }
   | PLUS expr {
         $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, $$, $2));
+        nextquad = quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, $$, $2));
       }
   | expr MINUS expr {
       //$$ = ast_new_operation(AST_OP_MINUS, $1, $3);
         $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_MINUS, $$, $1, $3));
+        nextquad = quad_add(&qt, quad_gen(QUAD_OP_MINUS, $$, $1, $3));
       }
   | MINUS expr {
         $$ = symbol_new_temp(&st);
@@ -146,6 +149,9 @@ condition:
     expr EQUAL expr
     {
         printf("Is $1 equal to $2 ?\n");
+        $$ = malloc(sizeof(struct bool_expr_));
+        quad_add(&($$->truelist), quad_ifgoto_gen($1, QUAD_RELOP_EQUAL, $3));
+        quad_add(&($$->falselist), quad_goto_gen());
     }
   | TRUE
     {

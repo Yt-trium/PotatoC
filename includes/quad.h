@@ -10,15 +10,23 @@ enum OpType{
     QUAD_OP_DIVI,
     QUAD_UOP_ASSIGN,
     QUAD_UOP_MINUS,
-    QUAD_UOP_PLUS
+    QUAD_UOP_PLUS,
+    QUAD_GOTO_IF,
+    QUAD_GOTO
+};
+
+enum RelOp{
+    QUAD_RELOP_EQUAL
 };
 
 typedef struct quad_{
     enum OpType type;
+    enum RelOp cmp;
     int id;
     symbol res;
     symbol left;
     symbol right;
+    struct quad_* dest;
 } quad_, *quad;
 
 typedef struct quad_list_
@@ -52,6 +60,14 @@ quad quad_gen(enum OpType type, symbol res, symbol left, symbol right);
   * @return     The generated quad
   */
 quad quad_unary_gen(enum OpType type, symbol res, symbol right);
+
+/**
+ * @brief quad_goto_gen
+ * @return
+ */
+quad quad_ifgoto_gen(symbol, enum RelOp, symbol);
+
+quad quad_goto_gen();
 
 /**
   * Add a quad in the list
