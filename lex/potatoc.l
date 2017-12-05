@@ -29,6 +29,7 @@ number     [1-9][0-9]*
 "*"                     { return(MULT); }
 "/"                     { return(DIVI); }
 ";"                     { return(END); }
+[()]                    { return yytext[0]; }
 
 {number}                { yylval.value = atoi(yytext); return CONSTANT; }
 {identifier}            { yylval.string = strdup(yytext); return IDENTIFIER; }

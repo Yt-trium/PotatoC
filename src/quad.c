@@ -66,6 +66,10 @@ void quad_print(quad q)
             printf("+"); break;
         case QUAD_OP_MINUS:
             printf("-"); break;
+        case QUAD_OP_MULT:
+            printf("*"); break;
+        case QUAD_OP_DIVI:
+            printf("/"); break;
         default:
             break;
     }
