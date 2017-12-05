@@ -73,6 +73,7 @@ void            symbol_list_print(symbol head)
 
 symbol symbol_new_temp(symbol* head, int v)
 {
+    printf("Generate new temp %d\n", v);
     static unsigned int cmpCount = 0;
     symbol tmp = symbol_alloc();
 
@@ -81,7 +82,7 @@ symbol symbol_new_temp(symbol* head, int v)
     tmp->type = SYMBOL_INT;
     tmp->value = v;
 
-    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP[%u]", cmpCount++);
+    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP_%u", cmpCount++);
 
     symbol_list_add(head, tmp);
     return tmp;
