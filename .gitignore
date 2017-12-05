@@ -62,3 +62,7 @@ vgcore.*
 
 # Qt user files
 *.creator.user
+
+# Doxygen generated doc
+doc/html
+doc/latex
