@@ -83,6 +83,7 @@ statement:
     }
   | IF '(' condition ')' statement {
         $$ = NULL;  
+        // Need to find top quad for this block
         quad_list_complete($3.truelist, $5->q);
         printf("End if\n");
   }
@@ -227,7 +228,7 @@ int main() {
 
 
   // Remove uncompleted branches
-  quad_list_clean_gotos(qt);
+  //quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 
