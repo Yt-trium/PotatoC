@@ -75,9 +75,8 @@ statement:
             fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
             YYABORT;
         }
-
     }
-  | IF '(' condition ')' tag statement {
+  | IF '(' condition ')' statement {
       printf("If condition ! \n");
   }
 
@@ -185,10 +184,10 @@ condition:
   | FALSE
     {
     }
-  | condition OR tag condition
+  | condition OR condition
     {
     }
-  | condition AND tag condition
+  | condition AND condition
     {
     }
   | NOT condition
@@ -198,11 +197,6 @@ condition:
     {
     }
 ;
-
-tag:
-    {
-    }
-  ;
 
 %%
   
