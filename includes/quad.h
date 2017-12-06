@@ -117,8 +117,17 @@ void        quad_list_complete(quad_list, quad);
 
 /**
   * @brief Remove unlinked goto quads from the given list
+  * @return Number of removed quad
   */
-void quad_list_clean_gotos(quad_list);
+int quad_list_clean_gotos(quad_list);
+
+/**
+  * Find the specified quad in the specified list
+  * @param  The list
+  * @param  The quad id
+  * @return The quad list element containing the wanted quad
+  */
+quad_list quad_list_find(quad_list, int);
 
 
 #endif

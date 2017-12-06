@@ -216,18 +216,34 @@ void        quad_list_complete(quad_list list, quad q)
         if(list->q->type >= QUAD_GOTO_IF &&
                 list->q->dest == NULL)
         {
-            list->q->dest = q;
+            int diff = q->id - list->q->id;
+            diff *= diff;
+            if(diff > 1)
+            {
+                // We dont complete in the case of
+                // 3 :if goto ?
+                // 4: goto 3 <- Wrong
+                list->q->dest = q;
+            }
         }
 
         list = list->next;
     }
 }
 
-void quad_list_clean_gotos(quad_list head)
+int quad_list_clean_gotos(quad_list head)
 {
+    int count = 0;
+    int lastId = -1; // Use to reorder quads
 
     while(head != NULL)
     {
+        if(head->q->id - lastId > 1)
+        {
+            head->q->id -= 1;
+        }
+        lastId = head->q->id;
+
         if(head->q->type >= QUAD_GOTO_IF &&
                 head->q->dest == NULL)
         {
@@ -237,11 +253,25 @@ void quad_list_clean_gotos(quad_list head)
             head = d->next;
             free(d->q);
             free(d);
+            count++;
         }
         else
         {
             head = head->next;
         }
-    }
 
+    }
+    return count;
+}
+
+quad_list quad_list_find(quad_list head, int id)
+{
+    while(head != NULL)
+    {
+        if(head->q != NULL && head->q->id == id)
+            return head;
+        head = head->next;
+    }
+    fprintf(stderr, "WARNING: Cannot find quad with the id %d\n", id);
+    return 0;
 }

@@ -21,8 +21,8 @@
   int value;
   struct quad_list_* headQuadData; // The start of the block code of the statement
   struct bool_node_ {
-      struct quad_list* truelist;
-      struct quad_list*  falselist;
+      struct quad_list_* truelist;
+      struct quad_list_*  falselist;
   } condData;
   struct expr_node_ {
      struct quad_list_* ql;
@@ -65,8 +65,7 @@ statement_list:
     }
   | statement {
         printf("Statement\n");
-        if($1 != NULL)
-            quad_list_complete(qt, $1->q);
+        quad_list_complete(qt, $1->q);
     }
 
 statement:
@@ -82,9 +81,11 @@ statement:
         }
     }
   | IF '(' condition ')' statement {
-        $$ = NULL;  
-        // Need to find top quad for this block
         quad_list_complete($3.truelist, $5->q);
+        // Need to find top quad for this block
+        $$ = quad_list_find(qt, $3.truelist->q->id); 
+        // We need the top quad list element, but from the global list
+        // Free true list and false list but not the quads
         printf("End if\n");
   }
 
@@ -228,10 +229,11 @@ int main() {
 
 
   // Remove uncompleted branches
-  //quad_list_clean_gotos(qt);
+  int rmQuad = quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 
+  printf("Removed %d quad(s) with undefined branch\n", rmQuad);
   printf("Cleaning...");
   quad_free_memory(qt);
   symbol_free_memory(st);
