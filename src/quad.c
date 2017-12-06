@@ -144,7 +144,7 @@ void quad_print(quad q)
         }
         printf("Goto -> ");
         if(q->dest == NULL){
-            printf("NULL QUAD");
+            printf("?");
         }
         else
         {
@@ -192,4 +192,18 @@ void quad_free_memory(quad_list head)
         head = next;
     }
 
+}
+
+void        quad_list_complete(quad_list list, quad q)
+{
+    while(list != NULL)
+    {
+        if(list->q->type >= QUAD_GOTO_IF &&
+                list->q->dest == NULL)
+        {
+            list->q->dest = q;
+        }
+
+        list = list->next;
+    }
 }

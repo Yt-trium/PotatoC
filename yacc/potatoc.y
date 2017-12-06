@@ -13,12 +13,6 @@
   symbol st = NULL;
   quad_list qt = NULL;
 
-  struct bool_node_{
-      quad_list truelist;
-      quad_list falselist;
-  };
-
-
   struct expr_node_ update_expr_node(struct expr_node_, symbol, quad_list);
 %}
 
@@ -26,7 +20,10 @@
   char* string;
   int value;
   struct quad_list_* headQuadData; // The start of the block code of the statement
-  struct bool_node_ *condData;
+  struct bool_node_ {
+      struct quad_list* truelist;
+      struct quad_list*  falselist;
+  } condData;
   struct expr_node_ {
      struct quad_list_* ql;
      struct symbol_* ptr;
@@ -61,7 +58,9 @@ axiom:
   statement_list END
 
 statement_list:
-  statement_list END statement
+  statement_list END statement {
+        printf("New statement\n");
+    }
   | statement
 
 statement:
@@ -77,7 +76,7 @@ statement:
         }
     }
   | IF '(' condition ')' statement {
-      printf("If condition ! \n");
+        quad_list_complete($3.truelist, $5->q);
   }
 
 
@@ -173,10 +172,13 @@ expr:
 condition:
     expr EQUAL expr
     {
-        printf("Is $1 equal to $2 ?\n");
-        /*$$ = malloc(sizeof(struct bool_expr_));
-        quad_add(&($$->truelist), quad_ifgoto_gen($1, QUAD_RELOP_EQUAL, $3));
-        quad_add(&($$->falselist), quad_goto_gen());*/
+        quad qif = quad_ifgoto_gen($1.ptr, QUAD_RELOP_EQUAL, $3.ptr);
+        quad qgo = quad_goto_gen();
+        quad_add(&qt, qif); 
+        quad_add($$.truelist, qif);
+        quad_add(&qt, qgo);
+        quad_add($$.falselist, qgo);
+        printf("List have been filled\n");
     }
   | TRUE
     {

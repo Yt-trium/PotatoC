@@ -105,8 +105,9 @@ void quad_free_memory(quad_list);
 
 quad_list*  quad_list_new(quad*);
 void        quad_list_free(quad_list*);
-void        quad_list_complete(quad_list*, symbol);
 void        quad_list_add(quad_list**, quad_list*);
+
+void        quad_list_complete(quad_list, quad);
 
 
 #endif
