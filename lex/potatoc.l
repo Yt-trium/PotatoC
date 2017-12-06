@@ -2,6 +2,7 @@
   #include <stdlib.h>
   #include <string.h>
   #include "y.potatoc.h"
+  #include "quad.h"
 %}
 
 blank      [\t\b\v\n\f ]*
@@ -18,7 +19,7 @@ number     [1-9][0-9]*
 "for"                   { return(FOR); }
 "while"                 { return(WHILE); }
 
-"=="                    { return EQUAL; }
+"=="                    { yylval.value = QUAD_RELOP_EQUAL; return RELOP; }
 "&&"                    { return AND; }
 "||"                    { return OR; }
 "!"                     { return NOT; }

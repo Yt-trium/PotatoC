@@ -33,9 +33,9 @@
 %token INT STENCIL
 %token IF ELSE WHILE FOR RETURN
 %token ASSIGN PLUS MINUS MULT DIVI INC DEC END
-%token TRUE FALSE OR AND NOT EQUAL
+%token TRUE FALSE OR AND NOT
 
-%token <value> CONSTANT
+%token <value> CONSTANT RELOP
 %token <string> IDENTIFIER
 
 %type <condData> condition
@@ -178,9 +178,9 @@ expr:
       ;
 
 condition:
-    expr EQUAL expr
+    expr RELOP expr
     {
-        quad qif = quad_ifgoto_gen($1.ptr, QUAD_RELOP_EQUAL, $3.ptr);
+        quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
