@@ -1,0 +1,13 @@
+a=5;
+b=3;
+c=100;
+
+if(a>=b) b=10;
+if(b>a) b=0;
+
+if(b==0) c=200;
+if(c!=100) a=c;
+
+if(a<=c) a=500;
+if(a<c) a=100;
+// a comment

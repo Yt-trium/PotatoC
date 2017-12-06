@@ -16,7 +16,13 @@ enum OpType{
 };
 
 enum RelOp{
-    QUAD_RELOP_EQUAL
+    QUAD_RELOP_EQ,
+    QUAD_RELOP_NEQ,
+    QUAD_RELOP_GT,
+    QUAD_RELOP_GTE,
+    QUAD_RELOP_LT,
+    QUAD_RELOP_LTE
+
 };
 
 typedef struct quad_{

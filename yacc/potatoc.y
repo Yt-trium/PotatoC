@@ -225,7 +225,6 @@ int main() {
 
   int status = yyparse();
 
-  printf("YACC Exit code: %d\n", status);
 
   // Remove uncompleted branches
   quad_list_clean_gotos(qt);
@@ -237,5 +236,6 @@ int main() {
   symbol_free_memory(st);
   lex_free();
   printf("OK\n");
+  printf("YACC Exit code: %d\n", status);
   return status;
 }

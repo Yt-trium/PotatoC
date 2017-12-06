@@ -8,12 +8,12 @@ quad quad_alloc()
     static unsigned int countQuad = 0;
     quad q = malloc(sizeof(quad_));
     q->id = countQuad++;
-    q->type = QUAD_OP_PLUS;
+    q->type = 0;
     q->res = NULL;
     q->left = NULL;
     q->right = NULL;
     q->dest = NULL;
-    q->cmp = QUAD_RELOP_EQUAL;
+    q->cmp = 0;
     return q;
 }
 
@@ -134,8 +134,23 @@ void quad_print(quad q)
         {
             printf("IF %5s ", q->left->name);
             switch (q->cmp) {
-            case QUAD_RELOP_EQUAL:
+            case QUAD_RELOP_EQ:
                 printf("==");
+                break;
+            case QUAD_RELOP_NEQ:
+                printf("!=");
+                break;
+            case QUAD_RELOP_GT:
+                printf(">");
+                break;
+            case QUAD_RELOP_GTE:
+                printf(">=");
+                break;
+            case QUAD_RELOP_LT:
+                printf("<");
+                break;
+            case QUAD_RELOP_LTE:
+                printf("<=");
                 break;
             default:
                 break;

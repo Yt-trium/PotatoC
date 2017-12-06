@@ -7,11 +7,13 @@
 
 blank      [\t\b\v\n\f ]*
 identifier [a-zA-Z_]+[0-9a-zA-Z_]*
-number     [1-9][0-9]*
+number     (0|[1-9][0-9]*)
+comment    "//".*$
 
 %%
 
 {blank}                 {}
+{comment}               {}
 
 "if"                    { return(IF); }
 "else"                  { return(ELSE); }
@@ -19,7 +21,13 @@ number     [1-9][0-9]*
 "for"                   { return(FOR); }
 "while"                 { return(WHILE); }
 
-"=="                    { yylval.value = QUAD_RELOP_EQUAL; return RELOP; }
+"=="                    { yylval.value = QUAD_RELOP_EQ;     return RELOP; }
+"!="                    { yylval.value = QUAD_RELOP_NEQ;    return RELOP; }
+"<="                    { yylval.value = QUAD_RELOP_LTE;    return RELOP; }
+">="                    { yylval.value = QUAD_RELOP_GTE;    return RELOP; }
+">"                     { yylval.value = QUAD_RELOP_GT;     return RELOP; }
+"<"                     { yylval.value = QUAD_RELOP_LT;     return RELOP; }
+
 "&&"                    { return AND; }
 "||"                    { return OR; }
 "!"                     { return NOT; }
@@ -47,7 +55,7 @@ number     [1-9][0-9]*
 {identifier}            { yylval.string = strdup(yytext); return IDENTIFIER; }
 
 
-.                       { printf("Caractere inconnu: %s", yytext); }
+.                       { printf("Caractere inconnu: %s\n", yytext); }
 
 %%
 
