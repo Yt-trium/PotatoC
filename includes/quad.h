@@ -109,5 +109,10 @@ void        quad_list_add(quad_list**, quad_list*);
 
 void        quad_list_complete(quad_list, quad);
 
+/**
+  * @brief Remove unlinked goto quads from the given list
+  */
+void quad_list_clean_gotos(quad_list);
+
 
 #endif

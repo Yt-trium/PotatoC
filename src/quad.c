@@ -207,3 +207,26 @@ void        quad_list_complete(quad_list list, quad q)
         list = list->next;
     }
 }
+
+void quad_list_clean_gotos(quad_list head)
+{
+
+    while(head != NULL)
+    {
+        if(head->q->type >= QUAD_GOTO_IF &&
+                head->q->dest == NULL)
+        {
+            head->previous->next = head->next;
+            head->next->previous = head->previous;
+            quad_list d = head;
+            head = d->next;
+            free(d->q);
+            free(d);
+        }
+        else
+        {
+            head = head->next;
+        }
+    }
+
+}

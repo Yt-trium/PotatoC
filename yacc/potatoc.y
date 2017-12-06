@@ -60,8 +60,14 @@ axiom:
 statement_list:
   statement_list END statement {
         printf("New statement\n");
+        if($3 != NULL)
+            quad_list_complete(qt, $3->q);
     }
-  | statement
+  | statement {
+        printf("Statement\n");
+        if($1 != NULL)
+            quad_list_complete(qt, $1->q);
+    }
 
 statement:
   assign {
@@ -76,7 +82,9 @@ statement:
         }
     }
   | IF '(' condition ')' statement {
+        $$ = NULL;  
         quad_list_complete($3.truelist, $5->q);
+        printf("End if\n");
   }
 
 
@@ -215,16 +223,14 @@ struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q
 
 int main() {
 
-  printf("PotatoC\n");
-
   int status = yyparse();
 
   printf("YACC Exit code: %d\n", status);
 
-  printf("Parsing over.\n");
+  // Remove uncompleted branches
+  quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
-  printf("Debug over.\n");
 
   printf("Cleaning...");
   quad_free_memory(qt);
