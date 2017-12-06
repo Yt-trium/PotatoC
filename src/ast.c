@@ -4,6 +4,7 @@
 
 #include "symbol.h"
 #include "ast.h"
+/*
 
 ast* ast_new_operation(ast_type op, ast* left, ast* right) {
   ast* new = malloc(sizeof(ast));
@@ -79,3 +80,4 @@ quad ast_codegen(ast *ast, symbol* symbol_table)
         break;
     }
 }
+*/

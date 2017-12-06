@@ -36,10 +36,9 @@ void            symbol_print(symbol);
 symbol          symbol_list_add(symbol *, symbol);
 
 /**
- * @brief symbol_list_find
- * @return
- */
-symbol          symbol_list_find(symbol, symbol);
+  * @brief Check if the given symbols exists and yell if not
+  */
+symbol symbol_must_find(symbol, char *);
 
 /**
  * @brief Find a symbol with the specified name in the list

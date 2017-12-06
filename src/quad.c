@@ -177,6 +177,7 @@ quad_list quad_list_alloc()
     ql->previous = NULL;
     ql->next = NULL;
     ql->q = NULL;
+    return ql;
 }
 
 void quad_list_print(quad_list head)
@@ -192,13 +193,13 @@ void quad_list_print(quad_list head)
 
 }
 
-void quad_free_memory(quad_list head)
+void quad_list_free(quad_list head, bool cleanQuads)
 {
     while(head != NULL)
     {
         quad_list next = head->next;
 
-        if(head->q != NULL)
+        if(head->q != NULL && cleanQuads)
         {
             free(head->q);
         }
@@ -242,7 +243,6 @@ int quad_list_clean_gotos(quad_list head)
         {
             head->q->id -= 1;
         }
-        lastId = head->q->id;
 
         if(head->q->type >= QUAD_GOTO_IF &&
                 head->q->dest == NULL)
@@ -257,6 +257,7 @@ int quad_list_clean_gotos(quad_list head)
         }
         else
         {
+            lastId = head->q->id;
             head = head->next;
         }
 

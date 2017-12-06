@@ -22,7 +22,7 @@
   struct quad_list_* headQuadData; // The start of the block code of the statement
   struct bool_node_ {
       struct quad_list_* truelist;
-      struct quad_list_*  falselist;
+      struct quad_list_* falselist;
   } condData;
   struct expr_node_ {
      struct quad_list_* ql;
@@ -55,24 +55,31 @@
 %%
 
 axiom:
-  statement_list END
+
+    statement_list END
 
 statement_list:
-  statement_list END statement {
-        printf("New statement\n");
+
+    statement_list END statement 
+    {
         if($3 != NULL)
             quad_list_complete(qt, $3->q);
     }
-  | statement {
-        printf("Statement\n");
+
+    | statement 
+    {
         quad_list_complete(qt, $1->q);
     }
 
 statement:
-  assign {
+
+    assign 
+    {
         $$ = $1.ql;
     }
-  | expr {
+    
+    | expr 
+    {
         $$ = $1.ql;
         if($$ == NULL)
         {
@@ -80,51 +87,67 @@ statement:
             YYABORT;
         }
     }
-  | IF '(' condition ')' statement {
+
+    | IF '(' condition ')' statement 
+    {
         quad_list_complete($3.truelist, $5->q);
         // Need to find top quad for this block
         $$ = quad_list_find(qt, $3.truelist->q->id); 
         // We need the top quad list element, but from the global list
         // Free true list and false list but not the quads
-        printf("End if\n");
-  }
-
+        quad_list_free($3.truelist, false);
+        quad_list_free($3.falselist, false);
+    }
 
 assign:
-    IDENTIFIER ASSIGN expr    {
-            $$ = $3;
-            symbol s = symbol_new(&st, $1);
-            quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $3.ptr));
-            $$ = update_expr_node($$, s, ql);
-        }
-  ;
+
+    IDENTIFIER ASSIGN expr    
+    {
+        $$ = $3;
+        symbol s = symbol_find(st, $1);
+        if(s == NULL)
+            s = symbol_new(&st, $1);
+        quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $3.ptr));
+        $$ = update_expr_node($$, s, ql);
+    }
 
 expr:
-    expr PLUS expr  { 
+
+    expr PLUS expr  
+    { 
         $$ = $1;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
-        }
-  | PLUS expr {
+        
+    }
+
+    | PLUS expr 
+    {
         $$ = $2;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, s, $2.ptr));
         $$ = update_expr_node($$, s, ql);
-      }
-  | expr MINUS expr {
+    }
+    
+    | expr MINUS expr 
+    {
         $$ = $1;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
-      }
-  | MINUS expr {
+    }
+
+    | MINUS expr 
+    {
         $$ = $2;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_MINUS, s, $2.ptr));
         $$ = update_expr_node($$, s, ql);
-      }
-  | INC IDENTIFIER  {
+    }
+
+    | INC IDENTIFIER  
+    {
         symbol s = symbol_find(st, $2);
         if(s == NULL)
         {
@@ -135,8 +158,10 @@ expr:
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, add));
         $$ = update_expr_node($$, s, ql);
-      }
-  | DEC IDENTIFIER  {
+    }
+
+    | DEC IDENTIFIER  
+    {
         symbol s = symbol_find(st, $2);
         if(s == NULL)
         {
@@ -147,67 +172,85 @@ expr:
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, sub));
         $$ = update_expr_node($$, s, ql);
-      }
-  | expr MULT expr  {
+    }
+  
+    | expr MULT expr  
+    {
         $$ = $1;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MULT, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
-      }
-  | expr DIVI expr  { 
+    }
+    
+    | expr DIVI expr  
+    { 
         $$ = $1;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_DIVI, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
-      }
-  | '(' expr ')'    { 
+    }
+
+    | '(' expr ')'    
+    {
         $$ = $2;
-      }
-  | IDENTIFIER      { 
-        symbol s = symbol_find(st, $1);
+    }
+    
+    | IDENTIFIER      
+    { 
+        symbol s = symbol_must_find(st, $1);
         if(s == NULL)
         {
             YYABORT;
         }
         $$ = update_expr_node($$, s, NULL);
-      }
-  | CONSTANT        {
+    }
+    
+    | CONSTANT        
+    {
         $$ = update_expr_node($$, 
-            symbol_new_const(&st, $1),
-            NULL
-            );
-      }
-      ;
+                        symbol_new_const(&st, $1),
+                        NULL
+                        );
+    }
 
 condition:
+
     expr RELOP expr
     {
+        $$.truelist = 0;
+        $$.falselist= 0;
         quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);
         quad_add(&($$.falselist), qgo);
+
     }
-  | TRUE
+
+    | TRUE
     {
     }
-  | FALSE
+
+    | FALSE
     {
     }
-  | condition OR condition
+
+    | condition OR condition
     {
     }
-  | condition AND condition
+
+    | condition AND condition
     {
     }
-  | NOT condition
+
+    | NOT condition
     {
     }
-  | '(' condition ')'
+
+    | '(' condition ')'
     {
     }
-;
 
 %%
   
@@ -216,7 +259,7 @@ struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q
     node.ptr = s;
 
     if(q == NULL)
-        node.ql = 0;
+        node.ql = 0; // First init
     else if(node.ql == NULL && q!= NULL)
         node.ql = q;
 
@@ -235,7 +278,7 @@ int main() {
 
   printf("Removed %d quad(s) with undefined branch\n", rmQuad);
   printf("Cleaning...");
-  quad_free_memory(qt);
+  quad_list_free(qt, true);
   symbol_free_memory(st);
   lex_free();
   printf("OK\n");

@@ -40,15 +40,12 @@ symbol          symbol_list_add(symbol *head, symbol s)
     return s;
 }
 
-symbol          symbol_list_find(symbol head, symbol s)
+symbol symbol_must_find(symbol head, char * name)
 {
-    while(head != NULL)
-    {
-        if(strcmp(head->name, s->name) == 0)
-            return head;
-        head = head->next;
-    }
-    return NULL;
+    symbol s = symbol_find(head, name);
+    if(s == NULL)
+        fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", name);
+    return s;
 }
 
 symbol symbol_find(symbol head, char * name)
@@ -59,7 +56,6 @@ symbol symbol_find(symbol head, char * name)
             return head;
         head = head->next;
     }
-    fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", name);
     return NULL;
 }
 
@@ -71,15 +67,15 @@ void            symbol_list_print(symbol head)
 
     while(head != NULL)
     {
-        printf("id: %16s [", head->name);
+        printf("%8s   |   ", head->name);
         if(head->type == SYMBOL_CST)
-            printf("[SYMBOL_CST] = %d", head->value);
+            printf("SYMBOL_CST = %d", head->value);
         else if(head->type == SYMBOL_INT)
-            printf("[SYMBOL_INT]");
+            printf("SYMBOL_INT");
         else if(head->type == SYMBOL_ID)
-            printf("[SYMBOL_ID]");
+            printf("SYMBOL_ID");
         else
-            printf("false, value: N/A");
+            printf("UNDEFINED %d", head->type);
         printf("\n");
         head = head->next;
     }

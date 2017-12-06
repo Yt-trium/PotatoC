@@ -8,6 +8,7 @@ int test_all()
     printf(".------------------.\n");
 
     // gen an AST
+    /*
     ast* n1 = ast_new_number(2);
     ast* n2 = ast_new_number(5);
     ast* n12 = ast_new_operation(AST_OP_PLUS, n1, n2);
@@ -29,5 +30,6 @@ int test_all()
     ast_codegen(n123,&symbol_table);
 
     printf(".------- END ------.\n");
+    */
     return 0;
 }

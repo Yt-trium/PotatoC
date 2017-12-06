@@ -2,6 +2,7 @@
 #define __QUAD__
 
 #include "symbol.h"
+#include <stdbool.h>
 
 enum OpType{
     QUAD_OP_PLUS,
@@ -37,7 +38,7 @@ typedef struct quad_{
 
 typedef struct quad_list_
 {
-    quad q;
+    struct quad_* q;
     struct quad_list_ *previous;
     struct quad_list_ *next;
 }quad_list_, *quad_list;
@@ -106,11 +107,12 @@ void quad_list_print (quad_list);
 
 /**
  * @brief quad_free_memory
+ * @param   The list of quad
+ * @param   If true, will free quads inside the list
  */
-void quad_free_memory(quad_list);
+void quad_list_free(quad_list, bool);
 
 quad_list*  quad_list_new(quad*);
-void        quad_list_free(quad_list*);
 void        quad_list_add(quad_list**, quad_list*);
 
 void        quad_list_complete(quad_list, quad);
