@@ -175,10 +175,9 @@ condition:
         quad qif = quad_ifgoto_gen($1.ptr, QUAD_RELOP_EQUAL, $3.ptr);
         quad qgo = quad_goto_gen();
         quad_add(&qt, qif); 
-        quad_add($$.truelist, qif);
+        quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);
-        quad_add($$.falselist, qgo);
-        printf("List have been filled\n");
+        quad_add(&($$.falselist), qgo);
     }
   | TRUE
     {

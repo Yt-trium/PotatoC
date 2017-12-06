@@ -144,7 +144,7 @@ void quad_print(quad q)
         }
         printf("Goto -> ");
         if(q->dest == NULL){
-            printf("?");
+            printf("?\n");
         }
         else
         {
