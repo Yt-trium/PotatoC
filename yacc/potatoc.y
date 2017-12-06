@@ -12,21 +12,25 @@
   void yyerror(char*);
   symbol st = NULL;
   quad_list qt = NULL;
-  quad nextquad = NULL;
 
-  struct bool_expr_{
+  struct bool_node_{
       quad_list truelist;
       quad_list falselist;
   };
+
+
+  struct expr_node_ update_expr_node(struct expr_node_, symbol, quad_list);
 %}
 
 %union {
   char* string;
   int value;
-  struct ast* ast;
-  struct symbol_* sym;
-  struct quad_* qua;
-  struct bool_expr_ *cond;
+  struct quad_list_* headQuadData; // The start of the block code of the statement
+  struct bool_node_ *condData;
+  struct expr_node_ {
+     struct quad_list_* ql;
+     struct symbol_* ptr;
+  } exprData;
 }
 
 %token INT STENCIL
@@ -37,9 +41,9 @@
 %token <value> CONSTANT
 %token <string> IDENTIFIER
 
-%type <cond> condition
-%type <qua> tag
-%type <sym> expr assign
+%type <condData> condition
+%type <headQuadData> statement 
+%type <exprData> expr assign
 
 %left OR
 %left AND
@@ -61,8 +65,12 @@ statement_list:
   | statement
 
 statement:
-  assign
-  | expr
+  assign {
+        $$ = $1.ql;
+    }
+  | expr {
+        $$ = $1.ql;
+    }
   | IF '(' condition ')' tag statement {
       printf("If condition ! \n");
   }
@@ -70,78 +78,90 @@ statement:
 
 assign:
     IDENTIFIER ASSIGN expr    {
-        $$ = symbol_new(&st, $1);
-        nextquad = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, $3));
-        //$$ = ast_new_statement($1, $3);
+            $$ = $3;
+            symbol s = symbol_new(&st, $1);
+            quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $3.ptr));
+            $$ = update_expr_node($$, s, ql);
         }
   ;
 
 expr:
     expr PLUS expr  { 
-        //$$ = ast_new_operation(AST_OP_PLUS, $1, $3);
-        $$ = symbol_new_temp(&st);
-        nextquad = quad_add(&qt, quad_gen(QUAD_OP_PLUS, $$, $1, $3));
+        $$ = $1;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, s, $1.ptr, $3.ptr));
+        $$ = update_expr_node($$, s, ql);
         }
   | PLUS expr {
-        $$ = symbol_new_temp(&st);
-        nextquad = quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, $$, $2));
+        $$ = $2;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_PLUS, s, $2.ptr));
+        $$ = update_expr_node($$, s, ql);
       }
   | expr MINUS expr {
-      //$$ = ast_new_operation(AST_OP_MINUS, $1, $3);
-        $$ = symbol_new_temp(&st);
-        nextquad = quad_add(&qt, quad_gen(QUAD_OP_MINUS, $$, $1, $3));
+        $$ = $1;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, s, $1.ptr, $3.ptr));
+        $$ = update_expr_node($$, s, ql);
       }
   | MINUS expr {
-        $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_unary_gen(QUAD_UOP_MINUS, $$, $2));
+        $$ = $2;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_MINUS, s, $2.ptr));
+        $$ = update_expr_node($$, s, ql);
       }
   | INC IDENTIFIER  {
-        $$ = symbol_find(st, $2);
-        if($$ == NULL)
+        symbol s = symbol_find(st, $2);
+        if(s == NULL)
         {
             YYABORT;
         }
         symbol one = symbol_new_const(&st, 1);
         symbol add = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, $$, one));
-        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, add));
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, s, one));
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, add));
+        $$ = update_expr_node($$, s, ql);
       }
   | DEC IDENTIFIER  {
-        $$ = symbol_find(st, $2);
-        if($$ == NULL)
+        symbol s = symbol_find(st, $2);
+        if(s == NULL)
         {
             YYABORT;
         }
         symbol one = symbol_new_const(&st, 1);
         symbol sub = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, $$, one));
-        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, $$, sub));
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, s, one));
+        quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, sub));
+        $$ = update_expr_node($$, s, ql);
       }
   | expr MULT expr  {
-      //$$ = ast_new_operation(AST_OP_MULT, $1, $3);
-        $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_MULT, $$, $1, $3));
+        $$ = $1;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MULT, s, $1.ptr, $3.ptr));
+        $$ = update_expr_node($$, s, ql);
       }
   | expr DIVI expr  { 
-      //$$ = ast_new_operation(AST_OP_DIVI, $1, $3);
-        $$ = symbol_new_temp(&st);
-        quad_add(&qt, quad_gen(QUAD_OP_DIVI, $$, $1, $3));
+        $$ = $1;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_DIVI, s, $1.ptr, $3.ptr));
+        $$ = update_expr_node($$, s, ql);
       }
   | '(' expr ')'    { 
         $$ = $2;
       }
   | IDENTIFIER      { 
-        $$ = symbol_find(st, $1);
-        if($$ == NULL)
+        symbol s = symbol_find(st, $1);
+        if(s == NULL)
         {
             YYABORT;
         }
-          //$$ = ast_new_id($1);
+        $$ = update_expr_node($$, s, NULL);
       }
   | CONSTANT        {
-        //$$ = ast_new_number($1);
-        //$$ = add_symbol(&head_symbol, "Number");
-        $$ = symbol_new_const(&st, $1);
+        $$ = update_expr_node($$, 
+            symbol_new_const(&st, $1),
+            NULL
+            );
       }
       ;
 
@@ -149,9 +169,9 @@ condition:
     expr EQUAL expr
     {
         printf("Is $1 equal to $2 ?\n");
-        $$ = malloc(sizeof(struct bool_expr_));
+        /*$$ = malloc(sizeof(struct bool_expr_));
         quad_add(&($$->truelist), quad_ifgoto_gen($1, QUAD_RELOP_EQUAL, $3));
-        quad_add(&($$->falselist), quad_goto_gen());
+        quad_add(&($$->falselist), quad_goto_gen());*/
     }
   | TRUE
     {
@@ -179,6 +199,18 @@ tag:
   ;
 
 %%
+  
+struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q)
+{
+    node.ptr = s;
+
+    if(q == NULL)
+        node.ql = 0;
+    else if(node.ql == NULL && q!= NULL)
+        node.ql = q;
+
+    return node;
+}
 
 int main() {
 
