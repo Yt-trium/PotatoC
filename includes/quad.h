@@ -118,6 +118,14 @@ void        quad_list_add(quad_list**, quad_list*);
 void        quad_list_complete(quad_list, quad);
 
 /**
+  * @biref Create a new list with the concatenation of two given list
+  * @param      First list
+  * @param      Second list
+  * @return     Concatened list
+  */
+quad_list quad_list_concat(quad_list, quad_list);
+
+/**
   * @brief Remove unlinked goto quads from the given list
   * @return Number of removed quad
   */

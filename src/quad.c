@@ -214,22 +214,38 @@ void        quad_list_complete(quad_list list, quad q)
 {
     while(list != NULL)
     {
-        if(list->q->type >= QUAD_GOTO_IF &&
+        if(list->q != NULL &&
+                list->q->type >= QUAD_GOTO_IF &&
                 list->q->dest == NULL)
         {
-            int diff = q->id - list->q->id;
-            diff *= diff;
-            if(diff > 1)
-            {
-                // We dont complete in the case of
-                // 3 :if goto ?
-                // 4: goto 3 <- Wrong
-                list->q->dest = q;
-            }
+            list->q->dest = q;
         }
 
         list = list->next;
     }
+}
+
+quad_list quad_list_concat(quad_list la, quad_list lb)
+{
+    quad_list res;
+
+    while(la != NULL)
+    {
+        if(la->q != NULL)
+            quad_add(&res, la->q);
+
+        la = la->next;
+    }
+
+    while(lb != NULL)
+    {
+        if(lb->q != NULL)
+            quad_add(&res, lb->q);
+
+        lb = lb->next;
+    }
+
+    return res;
 }
 
 int quad_list_clean_gotos(quad_list head)
@@ -243,6 +259,7 @@ int quad_list_clean_gotos(quad_list head)
         {
             head->q->id -= 1;
         }
+        lastId = head->q->id;
 
         if(head->q->type >= QUAD_GOTO_IF &&
                 head->q->dest == NULL)
@@ -257,7 +274,6 @@ int quad_list_clean_gotos(quad_list head)
         }
         else
         {
-            lastId = head->q->id;
             head = head->next;
         }
 

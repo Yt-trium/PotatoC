@@ -19,11 +19,14 @@
 %union {
   char* string;
   int value;
-  struct quad_list_* headQuadData; // The start of the block code of the statement
   struct bool_node_ {
       struct quad_list_* truelist;
       struct quad_list_* falselist;
   } condData;
+  struct statement_node_ {
+    struct quad_list_* head;
+    struct quad_list_* next;
+  } statementData;
   struct expr_node_ {
      struct quad_list_* ql;
      struct symbol_* ptr;
@@ -39,7 +42,7 @@
 %token <string> IDENTIFIER
 
 %type <condData> condition
-%type <headQuadData> statement 
+%type <statementData> statement statement_list
 %type <exprData> expr assign
 
 %left OR
@@ -62,38 +65,59 @@ statement_list:
 
     statement_list END statement 
     {
-        if($3 != NULL)
-            quad_list_complete(qt, $3->q);
+        // free list
+        printf("Concat statement\n");
+        printf("Next head statement is %d\n", $3.head->q->id);
+        quad_list_complete($$.next, $3.head->q);
+        quad_list_free($$.next, false);
+        $$.next = $3.next;
+        $$.head = $3.head;
     }
 
     | statement 
     {
-        quad_list_complete(qt, $1->q);
+        $$.next = $1.next;
+        $$.head = $1.head;
+        printf("Alone statement\n");
+
+        //$$.next = $1.next;
+        //quad_list_complete($3.next, $3->q);
+        //quad_list_complete(qt, $1->q);
+        // Free list
     }
 
 statement:
 
     assign 
     {
-        $$ = $1.ql;
+        $$.next = NULL;
+        $$.head = $1.ql;
     }
     
     | expr 
     {
-        $$ = $1.ql;
-        if($$ == NULL)
+        $$.next = NULL;
+        if($1.ql == NULL)
         {
             fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
             YYABORT;
         }
+        $$.head = $1.ql;
     }
 
     | IF '(' condition ')' statement 
     {
-        quad_list_complete($3.truelist, $5->q);
-        // Need to find top quad for this block
-        $$ = quad_list_find(qt, $3.truelist->q->id); 
+        $$.next = NULL;
+        quad_list_complete($3.truelist, $5.head->q);
+        $$.next = quad_list_concat($3.falselist, $5.next);
+
         // We need the top quad list element, but from the global list
+
+        if($3.truelist != NULL)
+            $$.head = quad_list_find(qt, $3.truelist->q->id);
+        else
+            $$.head = quad_list_find(qt, $3.falselist->q->id); 
+
         // Free true list and false list but not the quads
         quad_list_free($3.truelist, false);
         quad_list_free($3.falselist, false);
@@ -230,10 +254,20 @@ condition:
 
     | TRUE
     {
+        $$.truelist = 0;
+        $$.falselist= 0;
+        quad qgo = quad_goto_gen();
+        quad_add(&qt, qgo); 
+        quad_add(&($$.truelist), qgo);
     }
 
     | FALSE
     {
+        $$.truelist = 0;
+        $$.falselist= 0;
+        quad qgo = quad_goto_gen();
+        quad_add(&qt, qgo); 
+        quad_add(&($$.falselist), qgo);
     }
 
     | condition OR condition
@@ -270,9 +304,8 @@ int main() {
 
   int status = yyparse();
 
-
   // Remove uncompleted branches
-  int rmQuad = quad_list_clean_gotos(qt);
+  int rmQuad = 0;//quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 
