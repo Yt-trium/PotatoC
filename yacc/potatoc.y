@@ -70,6 +70,12 @@ statement:
     }
   | expr {
         $$ = $1.ql;
+        if($$ == NULL)
+        {
+            fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
+            YYABORT;
+        }
+
     }
   | IF '(' condition ')' tag statement {
       printf("If condition ! \n");
