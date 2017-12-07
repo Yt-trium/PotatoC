@@ -278,6 +278,16 @@ condition:
 
     | condition OR condition
     {
+        $$.truelist = NULL;
+        $$.falselist = NULL;
+
+        if($3.truelist != NULL) // Instead of M.quad
+            quad_list_complete($1.falselist, $3.truelist->q);
+        else
+            quad_list_complete($1.falselist, $3.falselist->q);
+
+        $$.falselist = $3.falselist;
+        $$.truelist = quad_list_concat($1.truelist, $3.truelist);
     }
 
     | condition AND condition
@@ -285,7 +295,7 @@ condition:
         $$.truelist = NULL;
         $$.falselist = NULL;
 
-        if($3.truelist != NULL)
+        if($3.truelist != NULL) // Instead of M.quad
             quad_list_complete($1.truelist, $3.truelist->q);
         else
             quad_list_complete($1.truelist, $3.falselist->q);
