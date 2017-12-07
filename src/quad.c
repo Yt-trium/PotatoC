@@ -226,7 +226,7 @@ void        quad_list_complete(quad_list list, quad q)
 
 quad_list quad_list_concat(quad_list la, quad_list lb)
 {
-    quad_list res;
+    quad_list res = NULL;
 
     while(la != NULL)
     {

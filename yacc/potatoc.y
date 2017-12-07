@@ -111,7 +111,6 @@ statement:
             fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
             YYABORT;
         }
-        printf("EXPR Statement, ligne %d\n", $1.ql->q->id);
         $$.head = $1.ql;
     }
 
@@ -119,15 +118,13 @@ statement:
     {
         $$.next = NULL;
         quad_list_complete($3.truelist, $5.head->q);
+
         $$.next = quad_list_concat($3.falselist, $5.next);
-
         // We need the top quad list element, but from the global list
-
         if($3.truelist != NULL)
             $$.head = quad_list_find(qt, $3.truelist->q->id);
         else
             $$.head = quad_list_find(qt, $3.falselist->q->id); 
-
         // Free true list and false list but not the quads
         //quad_list_free($3.truelist, false);
         //quad_list_free($3.falselist, false);
@@ -251,21 +248,20 @@ condition:
 
     expr RELOP expr
     {
-        $$.truelist = 0;
-        $$.falselist= 0;
+        $$.truelist = NULL;
+        $$.falselist= NULL;
         quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);
         quad_add(&($$.falselist), qgo);
-
     }
 
     | TRUE
     {
-        $$.truelist = 0;
-        $$.falselist= 0;
+        $$.truelist = NULL;
+        $$.falselist= NULL;
         quad qgo = quad_goto_gen();
         quad_add(&qt, qgo); 
         quad_add(&($$.truelist), qgo);
@@ -273,8 +269,8 @@ condition:
 
     | FALSE
     {
-        $$.truelist = 0;
-        $$.falselist= 0;
+        $$.truelist = NULL;
+        $$.falselist= NULL;
         quad qgo = quad_goto_gen();
         quad_add(&qt, qgo); 
         quad_add(&($$.falselist), qgo);
