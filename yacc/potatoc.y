@@ -65,11 +65,15 @@ statement_list:
 
     statement_list END statement 
     {
-        // free list
-        printf("Concat statement\n");
-        printf("Next head statement is %d\n", $3.head->q->id);
+        /*
+        printf("Concat statement.");
+        if($$.next == NULL)
+            printf("Next list empty.");
+        printf(" New next statement is %d\n\n", $3.head->q->id);
+        */
         quad_list_complete($$.next, $3.head->q);
-        quad_list_free($$.next, false);
+        // free list
+        //quad_list_free($$.next, false);
         $$.next = $3.next;
         $$.head = $3.head;
     }
@@ -78,7 +82,12 @@ statement_list:
     {
         $$.next = $1.next;
         $$.head = $1.head;
-        printf("Alone statement\n");
+        /*
+        printf("Alone statement. ");
+        if($1.next == NULL)
+            printf("Next list empty.");
+        printf(" Statement is %d\n\n", $1.head->q->id);
+        */
 
         //$$.next = $1.next;
         //quad_list_complete($3.next, $3->q);
@@ -102,6 +111,7 @@ statement:
             fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
             YYABORT;
         }
+        printf("EXPR Statement, ligne %d\n", $1.ql->q->id);
         $$.head = $1.ql;
     }
 
@@ -119,8 +129,8 @@ statement:
             $$.head = quad_list_find(qt, $3.falselist->q->id); 
 
         // Free true list and false list but not the quads
-        quad_list_free($3.truelist, false);
-        quad_list_free($3.falselist, false);
+        //quad_list_free($3.truelist, false);
+        //quad_list_free($3.falselist, false);
     }
 
 assign:
@@ -139,7 +149,7 @@ expr:
 
     expr PLUS expr  
     { 
-        $$ = $1;
+        $$ = $3;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
@@ -200,7 +210,7 @@ expr:
   
     | expr MULT expr  
     {
-        $$ = $1;
+        $$ = $3;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MULT, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
@@ -208,7 +218,7 @@ expr:
     
     | expr DIVI expr  
     { 
-        $$ = $1;
+        $$ = $3;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_DIVI, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
@@ -304,12 +314,12 @@ int main() {
 
   int status = yyparse();
 
-  // Remove uncompleted branches
-  int rmQuad = 0;//quad_list_clean_gotos(qt);
+  // Set uncompleted branches to end
+  int rmQuad = quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 
-  printf("Removed %d quad(s) with undefined branch\n", rmQuad);
+  printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
   printf("Cleaning...");
   quad_list_free(qt, true);
   symbol_free_memory(st);

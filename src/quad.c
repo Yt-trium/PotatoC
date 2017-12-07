@@ -158,13 +158,12 @@ void quad_print(quad q)
             printf(" %5s -> ", q->right->name);
         }
         printf("Goto -> ");
-        if(q->dest == NULL){
+        if(q->type == QUAD_GOTO_END)
+            printf("END\n");
+        else if(q->dest == NULL)
             printf("?\n");
-        }
         else
-        {
             printf("QUAD %5d\n", q->dest->id);
-        }
     }
 
 
@@ -251,31 +250,16 @@ quad_list quad_list_concat(quad_list la, quad_list lb)
 int quad_list_clean_gotos(quad_list head)
 {
     int count = 0;
-    int lastId = -1; // Use to reorder quads
 
     while(head != NULL)
     {
-        if(head->q->id - lastId > 1)
-        {
-            head->q->id -= 1;
-        }
-        lastId = head->q->id;
-
         if(head->q->type >= QUAD_GOTO_IF &&
                 head->q->dest == NULL)
         {
-            head->previous->next = head->next;
-            head->next->previous = head->previous;
-            quad_list d = head;
-            head = d->next;
-            free(d->q);
-            free(d);
+            head->q->type = QUAD_GOTO_END;
             count++;
         }
-        else
-        {
-            head = head->next;
-        }
+        head = head->next;
 
     }
     return count;

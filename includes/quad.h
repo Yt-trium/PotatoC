@@ -13,6 +13,7 @@ enum OpType{
     QUAD_UOP_MINUS,
     QUAD_UOP_PLUS,
     QUAD_GOTO_IF,
+    QUAD_GOTO_END,
     QUAD_GOTO
 };
 
@@ -126,8 +127,9 @@ void        quad_list_complete(quad_list, quad);
 quad_list quad_list_concat(quad_list, quad_list);
 
 /**
-  * @brief Remove unlinked goto quads from the given list
-  * @return Number of removed quad
+  * @brief Detect unlinked quads and link them to the end
+  * Usefull when the last instruction is an if statement to link the else to the end
+  * @return Number of cleaned quad
   */
 int quad_list_clean_gotos(quad_list);
 
