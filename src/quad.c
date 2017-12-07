@@ -250,7 +250,7 @@ quad_list quad_list_concat(quad_list la, quad_list lb)
 quad_list quad_list_append(quad_list* ql, quad q)
 {
     quad_add(ql, q);
-    return ql;
+    return *ql;
 }
 
 int quad_list_clean_gotos(quad_list head)

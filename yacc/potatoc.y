@@ -136,14 +136,14 @@ statement:
         qll = quad_list_concat($5.next, $8.next);
         $$.next = quad_list_concat(qll, $8.next);
         $$.next = quad_list_append(&($$.next), $7.head->q);
-        quad_list_free(qll, false);
+        //quad_list_free(qll, false);
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
-        quad_list_free($3.truelist, false);
+        /*quad_list_free($3.truelist, false);
         quad_list_free($3.falselist, false);
         quad_list_free($5.next, false);
-        quad_list_free($8.next, false);
+        quad_list_free($8.next, false);*/
     }
 
 
