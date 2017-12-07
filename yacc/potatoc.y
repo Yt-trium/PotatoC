@@ -306,6 +306,8 @@ condition:
 
     | NOT condition
     {
+      $$.truelist = $2.falselist;
+      $$.falselist = $2.truelist;
     }
 
     | '(' condition ')'
