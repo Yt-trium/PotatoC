@@ -2,8 +2,6 @@
 #define SYMBOL_H
 #include <stdbool.h>
 
-#define SYMBOL_MAX_NAME_LENGTH 128
-
 typedef enum{
     SYMBOL_INT,
     SYMBOL_FUNC,
