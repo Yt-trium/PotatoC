@@ -43,8 +43,11 @@
 %token <string> IDENTIFIER
 
 %type <condData> condition
-%type <statementData> statement statement_list link
-%type <exprData> expr assign
+%type <statementData> statement statement_list link expr_statement assign_statement
+%type <exprData> expr
+
+%nonassoc LOWER_THAN_ELSE
+%nonassoc ELSE
 
 %left OR
 %left AND
@@ -60,11 +63,11 @@
 
 axiom:
 
-    statement_list END
+    statement_list
 
 statement_list:
 
-    statement_list END statement 
+    statement_list statement
     {
         /*
         printf("Concat statement.");
@@ -72,11 +75,11 @@ statement_list:
             printf("Next list empty.");
         printf(" New next statement is %d\n\n", $3.head->q->id);
         */
-        quad_list_complete($$.next, $3.head->q);
+        quad_list_complete($$.next, $2.head->q);
         // free list
         //quad_list_free($$.next, false);
-        $$.next = $3.next;
-        $$.head = $3.head;
+        $$.next = $2.next;
+        $$.head = $2.head;
     }
 
     | statement 
@@ -98,24 +101,17 @@ statement_list:
 
 statement:
 
-    assign 
+    assign_statement
     {
-        $$.next = NULL;
-        $$.head = $1.ql;
+        $$ = $1;
     }
     
-    | expr 
+    | expr_statement
     {
-        $$.next = NULL;
-        if($1.ql == NULL)
-        {
-            fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
-            YYABORT;
-        }
-        $$.head = $1.ql;
+        $$ = $1;
     }
 
-    | IF '(' condition ')' statement 
+    | IF '(' condition ')' statement %prec LOWER_THAN_ELSE
     {
         $$.next = NULL;
         quad_list_complete($3.truelist, $5.head->q);
@@ -127,6 +123,7 @@ statement:
         //quad_list_free($3.truelist, false);
         //quad_list_free($3.falselist, false);
     }
+
     | IF '(' condition ')' statement ELSE link statement
     {
         $$.next = NULL;
@@ -143,16 +140,32 @@ statement:
         //quad_list_free($3.falselist, false);
     }
 
-assign:
+assign_statement:
 
-    IDENTIFIER ASSIGN expr    
+    IDENTIFIER ASSIGN expr END
     {
-        $$ = $3;
+
         symbol s = symbol_find(st, $1);
         if(s == NULL)
             s = symbol_new(&st, $1);
         quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $3.ptr));
-        $$ = update_expr_node($$, s, ql);
+        $3 = update_expr_node($3, s, ql);
+
+        $$.next = NULL;
+        $$.head = $3.ql;
+    }
+
+expr_statement:
+
+    expr END
+    {
+        $$.next = NULL;
+        if($1.ql == NULL)
+        {
+            fprintf(stderr, "ERROR: No instruction generated for the expression.\n");
+            YYABORT;
+        }
+        $$.head = $1.ql;
     }
 
 expr:
@@ -361,7 +374,7 @@ int main() {
 
   // Set uncompleted branches to end
   int rmQuad = 0;
-  //rmQuad = quad_list_clean_gotos(qt);
+  rmQuad = quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 
