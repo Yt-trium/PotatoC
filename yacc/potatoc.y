@@ -282,6 +282,16 @@ condition:
 
     | condition AND condition
     {
+        $$.truelist = NULL;
+        $$.falselist = NULL;
+
+        if($3.truelist != NULL)
+            quad_list_complete($1.truelist, $3.truelist->q);
+        else
+            quad_list_complete($1.truelist, $3.falselist->q);
+
+        $$.falselist = quad_list_concat($1.falselist, $3.falselist);
+        $$.truelist = $3.truelist;
     }
 
     | NOT condition
@@ -294,6 +304,10 @@ condition:
 
 %%
   
+void yyerror (char *s) {
+    fprintf(stderr, "[Yacc] error: %s\n", s);
+}
+
 struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q)
 {
     node.ptr = s;
