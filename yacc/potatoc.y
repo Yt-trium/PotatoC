@@ -43,7 +43,7 @@
 %token <string> IDENTIFIER
 
 %type <condData> condition
-%type <statementData> statement statement_list
+%type <statementData> statement statement_list link
 %type <exprData> expr assign
 
 %left OR
@@ -121,6 +121,21 @@ statement:
         quad_list_complete($3.truelist, $5.head->q);
 
         $$.next = quad_list_concat($3.falselist, $5.next);
+        // We need the top quad list element, but from the global list
+        $$.head = quad_list_find(qt, $3.top->id);
+        // Free true list and false list but not the quads
+        //quad_list_free($3.truelist, false);
+        //quad_list_free($3.falselist, false);
+    }
+    | IF '(' condition ')' statement ELSE link statement
+    {
+        $$.next = NULL;
+        quad_list_complete($3.truelist, $5.head->q);
+        quad_list_complete($3.falselist, $8.head->q);
+
+        $$.next = quad_list_concat($5.next, $8.next);
+        $$.next = quad_list_concat($$.next, $8.next);
+        $$.next = quad_list_append($$.next, $7.head->q);
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
@@ -241,6 +256,13 @@ expr:
                         NULL
                         );
     }
+
+link:
+  {
+        quad qgo = quad_goto_gen();
+        $$.head = quad_add(&qt, qgo);
+        $$.next = NULL;
+  }
 
 condition:
 

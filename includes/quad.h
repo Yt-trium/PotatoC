@@ -127,6 +127,12 @@ void        quad_list_complete(quad_list, quad);
 quad_list quad_list_concat(quad_list, quad_list);
 
 /**
+ * @brief Append an element to the given list
+ * @return The given list that will be created if is null
+ */
+quad_list quad_list_append(quad_list, quad);
+
+/**
   * @brief Detect unlinked quads and link them to the end
   * Usefull when the last instruction is an if statement to link the else to the end
   * @return Number of cleaned quad
