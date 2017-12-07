@@ -247,9 +247,9 @@ quad_list quad_list_concat(quad_list la, quad_list lb)
     return res;
 }
 
-quad_list quad_list_append(quad_list ql, quad q)
+quad_list quad_list_append(quad_list* ql, quad q)
 {
-    quad_add(&ql, q);
+    quad_add(ql, q);
     return ql;
 }
 

@@ -70,22 +70,18 @@
 axiom:
 
     statement_list
+    {
+        quad_list_free($1.next, false);
+    }
 
 statement_list:
 
     statement_list statement
     {
-        /*
-        printf("Concat statement.");
-        if($$.next == NULL)
-            printf("Next list empty.\n");
-        if($2.head != NULL)
-            printf(" New next statement is %d\n\n", $2.head->q->id);
-        */
         if($2.head != NULL)
             quad_list_complete($$.next, $2.head->q);
         // free list
-        //quad_list_free($$.next, false);
+        quad_list_free($$.next, false);
         $$.next = $2.next;
         $$.head = $2.head;
     }
@@ -94,18 +90,6 @@ statement_list:
     {
         $$.next = $1.next;
         $$.head = $1.head;
-        /*
-        printf("Alone statement. ");
-        if($1.next == NULL)
-            printf("Next list empty.\n");
-        if($1.head != NULL)
-            printf(" Statement is %d\n\n", $1.head->q->id);
-        */
-
-        //$$.next = $1.next;
-        //quad_list_complete($3.next, $3->q);
-        //quad_list_complete(qt, $1->q);
-        // Free list
     }
 
 statement:
@@ -134,8 +118,9 @@ statement:
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
-        //quad_list_free($3.truelist, false);
-        //quad_list_free($3.falselist, false);
+        quad_list_free($3.truelist, false);
+        quad_list_free($3.falselist, false);
+        quad_list_free($5.next, false);
     }
 
     | IF '(' condition ')' statement ELSE link statement
@@ -144,14 +129,18 @@ statement:
         quad_list_complete($3.truelist, $5.head->q);
         quad_list_complete($3.falselist, $8.head->q);
 
-        $$.next = quad_list_concat($5.next, $8.next);
-        $$.next = quad_list_concat($$.next, $8.next);
-        $$.next = quad_list_append($$.next, $7.head->q);
+        quad_list qll = NULL;
+        qll = quad_list_concat($5.next, $8.next);
+        $$.next = quad_list_concat(qll, $8.next);
+        $$.next = quad_list_append(&($$.next), $7.head->q);
+        quad_list_free(qll, false);
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
-        //quad_list_free($3.truelist, false);
-        //quad_list_free($3.falselist, false);
+        quad_list_free($3.truelist, false);
+        quad_list_free($3.falselist, false);
+        quad_list_free($5.next, false);
+        quad_list_free($8.next, false);
     }
 
 
@@ -168,6 +157,7 @@ declare_statement:
         s = symbol_new(&st, $2);
         $$.head = NULL;
         $$.next = NULL;
+        free($2);
     }
 
     | INT IDENTIFIER ASSIGN expr END
@@ -185,6 +175,7 @@ declare_statement:
 
         $$.next = NULL;
         $$.head = $4.ql;
+        free($2);
     }
 
 assign_statement:
@@ -202,6 +193,7 @@ assign_statement:
 
         $$.next = NULL;
         $$.head = $3.ql;
+        free($1);
     }
 
 expr_statement:
@@ -264,6 +256,7 @@ expr:
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, add));
         $$ = update_expr_node($$, s, ql);
+        free($2);
     }
 
     | DEC IDENTIFIER  
@@ -278,6 +271,7 @@ expr:
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, sub));
         $$ = update_expr_node($$, s, ql);
+        free($2);
     }
   
     | expr MULT expr  
@@ -309,6 +303,7 @@ expr:
             YYABORT;
         }
         $$ = update_expr_node($$, s, NULL);
+        free($1);
     }
     
     | CONSTANT        
@@ -371,6 +366,9 @@ condition:
 
         $$.falselist = $3.falselist;
         $$.truelist = quad_list_concat($1.truelist, $3.truelist);
+        quad_list_free($1.falselist, false);
+        quad_list_free($1.truelist, false);
+        quad_list_free($3.truelist, false);
     }
 
     | condition AND condition
@@ -383,6 +381,10 @@ condition:
 
         $$.falselist = quad_list_concat($1.falselist, $3.falselist);
         $$.truelist = $3.truelist;
+
+        quad_list_free($1.falselist, false);
+        quad_list_free($1.truelist, false);
+        quad_list_free($3.falselist, false);
     }
 
     | NOT condition

@@ -96,11 +96,13 @@ symbol symbol_new_temp(symbol* head)
     static unsigned int cmpCount = 0;
     symbol tmp = symbol_alloc();
 
-    tmp->name = malloc(SYMBOL_MAX_NAME_LENGTH);
+    size_t needed = snprintf(NULL, 0, "TEMP_%u", cmpCount++);
+    tmp->name = malloc(needed);
+    snprintf(tmp->name, needed, "TEMP_%u", cmpCount++);
+
     tmp->type = SYMBOL_INT;
     tmp->value = 0;
 
-    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "TEMP_%u", cmpCount++);
 
     symbol_list_add(head, tmp);
     return tmp;
@@ -111,11 +113,12 @@ symbol symbol_new_const(symbol* head, int v)
     static unsigned int constCount = 0;
     symbol tmp = symbol_alloc();
 
-    tmp->name = malloc(SYMBOL_MAX_NAME_LENGTH);
+    size_t needed = snprintf(NULL, 0, "CONST_%u", constCount++);
+    tmp->name = malloc(needed);
+    snprintf(tmp->name, needed, "CONST_%u", constCount++);
+
     tmp->type = SYMBOL_CST;
     tmp->value = v;
-
-    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "CONST_%u", constCount++);
 
     symbol_list_add(head, tmp);
     return tmp;
