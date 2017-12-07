@@ -52,7 +52,7 @@ symbol symbol_find(symbol head, char * name)
 {
     while(head != NULL)
     {
-        if(head->type == SYMBOL_ID && strcmp(head->name, name) == 0)
+        if(head->type == SYMBOL_INT && strcmp(head->name, name) == 0)
             return head;
         head = head->next;
     }
@@ -72,8 +72,6 @@ void            symbol_list_print(symbol head)
             printf("SYMBOL_CST = %d", head->value);
         else if(head->type == SYMBOL_INT)
             printf("SYMBOL_INT");
-        else if(head->type == SYMBOL_ID)
-            printf("SYMBOL_ID");
         else
             printf("UNDEFINED %d", head->type);
         printf("\n");
@@ -86,7 +84,7 @@ symbol symbol_new(symbol * head, char * name)
     symbol tmp = symbol_alloc();
 
     tmp->name = strdup(name);
-    tmp->type = SYMBOL_ID;
+    tmp->type = SYMBOL_INT;
     tmp->value = 0;
 
     symbol_list_add(head, tmp);
@@ -110,9 +108,16 @@ symbol symbol_new_temp(symbol* head)
 
 symbol symbol_new_const(symbol* head, int v)
 {
-    symbol tmp = symbol_new_temp(head);
-    tmp->value = v;
+    static unsigned int constCount = 0;
+    symbol tmp = symbol_alloc();
+
+    tmp->name = malloc(SYMBOL_MAX_NAME_LENGTH);
     tmp->type = SYMBOL_CST;
+    tmp->value = v;
+
+    snprintf(tmp->name, SYMBOL_MAX_NAME_LENGTH, "CONST_%u", constCount++);
+
+    symbol_list_add(head, tmp);
     return tmp;
 }
 

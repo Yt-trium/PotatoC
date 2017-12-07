@@ -43,7 +43,13 @@
 %token <string> IDENTIFIER
 
 %type <condData> condition
-%type <statementData> statement statement_list link expr_statement assign_statement
+%type <statementData>
+  statement
+  statement_list
+  link
+  expr_statement
+  assign_statement
+  declare_statement
 %type <exprData> expr
 
 %nonassoc LOWER_THAN_ELSE
@@ -72,10 +78,12 @@ statement_list:
         /*
         printf("Concat statement.");
         if($$.next == NULL)
-            printf("Next list empty.");
-        printf(" New next statement is %d\n\n", $3.head->q->id);
+            printf("Next list empty.\n");
+        if($2.head != NULL)
+            printf(" New next statement is %d\n\n", $2.head->q->id);
         */
-        quad_list_complete($$.next, $2.head->q);
+        if($2.head != NULL)
+            quad_list_complete($$.next, $2.head->q);
         // free list
         //quad_list_free($$.next, false);
         $$.next = $2.next;
@@ -89,8 +97,9 @@ statement_list:
         /*
         printf("Alone statement. ");
         if($1.next == NULL)
-            printf("Next list empty.");
-        printf(" Statement is %d\n\n", $1.head->q->id);
+            printf("Next list empty.\n");
+        if($1.head != NULL)
+            printf(" Statement is %d\n\n", $1.head->q->id);
         */
 
         //$$.next = $1.next;
@@ -102,6 +111,11 @@ statement_list:
 statement:
 
     assign_statement
+    {
+        $$ = $1;
+    }
+
+    | declare_statement
     {
         $$ = $1;
     }
@@ -140,14 +154,49 @@ statement:
         //quad_list_free($3.falselist, false);
     }
 
+
+declare_statement:
+
+    INT IDENTIFIER END
+    {
+        symbol s = symbol_find(st, $2);
+        if(s != NULL)
+        {
+            fprintf(stderr, "The variable %s already exists.\n", $2);
+            YYABORT;
+        }
+        s = symbol_new(&st, $2);
+        $$.head = NULL;
+        $$.next = NULL;
+    }
+
+    | INT IDENTIFIER ASSIGN expr END
+    {
+        symbol s = symbol_find(st, $2);
+        if(s != NULL)
+        {
+            fprintf(stderr, "The variable %s already exists.\n", s->name);
+            YYABORT;
+        }
+        s = symbol_new(&st, $2);
+
+        quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $4.ptr));
+        $4 = update_expr_node($4, s, ql);
+
+        $$.next = NULL;
+        $$.head = $4.ql;
+    }
+
 assign_statement:
 
     IDENTIFIER ASSIGN expr END
     {
 
         symbol s = symbol_find(st, $1);
-        if(s == NULL)
-            s = symbol_new(&st, $1);
+        if(s == NULL){
+            fprintf(stderr, "The variable %s isn't declared.\n", $1);
+            YYABORT;
+        }
         quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, $3.ptr));
         $3 = update_expr_node($3, s, ql);
 

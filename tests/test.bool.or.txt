@@ -1,3 +1,8 @@
+int a;
+int c;
+int b;
+int e;
+
 if(3<4 || 6>2) a = 1;
 c=3;
 if(3<4 || !6>2) e=1;

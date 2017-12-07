@@ -1,6 +1,6 @@
-a=5;
-b=3;
-c=100;
+int a=5;
+int b=3;
+int c=100;
 
 if(a>=b) b=10;
 if(b>a) b=0;

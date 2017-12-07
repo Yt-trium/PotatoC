@@ -7,8 +7,7 @@
 typedef enum{
     SYMBOL_INT,
     SYMBOL_FUNC,
-    SYMBOL_CST,
-    SYMBOL_ID
+    SYMBOL_CST
 } symbol_type;
 
 typedef struct symbol_{

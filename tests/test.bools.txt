@@ -1,4 +1,6 @@
-a = 1;
+int a = 1;
+int e;
+int f;
 if(true) a = 2;
 if(a == 2) a=3;
 if(false) a=100;

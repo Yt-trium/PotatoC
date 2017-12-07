@@ -1,6 +1,6 @@
-if(!4<3) a = 1;
-b=1; 
-if(!true) c = 3;
+if(!4<3) int a = 1;
+int b=1; 
+if(!true) int c = 3;
 
-if(3==3 && !6==6) e=8;
-p=5;
+if(3==3 && !6==6) int e=8;
+int p=5;
