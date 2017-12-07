@@ -96,7 +96,7 @@ symbol symbol_new_temp(symbol* head)
     static unsigned int cmpCount = 0;
     symbol tmp = symbol_alloc();
 
-    size_t needed = snprintf(NULL, 0, "TEMP_%u", cmpCount++);
+    size_t needed = snprintf(NULL, 0, "TEMP_%u", cmpCount++) + 1; // \0
     tmp->name = malloc(needed);
     snprintf(tmp->name, needed, "TEMP_%u", cmpCount++);
 
@@ -113,7 +113,7 @@ symbol symbol_new_const(symbol* head, int v)
     static unsigned int constCount = 0;
     symbol tmp = symbol_alloc();
 
-    size_t needed = snprintf(NULL, 0, "CONST_%u", constCount++);
+    size_t needed = snprintf(NULL, 0, "CONST_%u", constCount++) + 1; // \0
     tmp->name = malloc(needed);
     snprintf(tmp->name, needed, "CONST_%u", constCount++);
 

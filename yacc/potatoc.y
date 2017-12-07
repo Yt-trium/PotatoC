@@ -7,12 +7,15 @@
   #include "test.h"
   #include "quad.h"
 
-  int yylex();
   void lex_free();
   void yyerror(char*);
   symbol st = NULL;
   quad_list qt = NULL;
 
+  extern FILE *yyin;
+  extern int yylex();
+  extern int yyparse();
+  
   struct expr_node_ update_expr_node(struct expr_node_, symbol, quad_list);
 %}
 
@@ -419,22 +422,47 @@ struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q
     return node;
 }
 
-int main() {
+int main(int argc, const char** argv) {
+    int status = 0;
 
-  int status = yyparse();
+    if(argc == 1)
+    {
+        fprintf(stdout, "Usage: %s [input [output]]\n", argv[0]);
+        fprintf(stdout, "Reading from standard input.\n");
+        status = yyparse();
+    }
+    else if(argc >= 2)
+    {
+        fprintf(stdout, "Reading from %s.\n", argv[1]);
+        if(argc == 3)
+            fprintf(stdout, "Output will be saved to %s.\n", argv[2]);
 
-  // Set uncompleted branches to end
-  int rmQuad = 0;
-  rmQuad = quad_list_clean_gotos(qt);
-  symbol_list_print(st);
-  quad_list_print(qt);
+        FILE *fi = fopen(argv[1], "r");
+        if (!fi) {
+            fprintf(stderr, "ERROR: Unable to input the given file %s.\n", argv[1]);
+            return -1;
+        }
+        yyin = fi;
+        do
+        {
+            status = yyparse();
+        } while(!feof(yyin) && status == 0);
+        fclose(fi);
+    }
 
-  printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
-  printf("Cleaning...");
-  quad_list_free(qt, true);
-  symbol_free_memory(st);
-  lex_free();
-  printf("OK\n");
-  printf("YACC Exit code: %d\n", status);
-  return status;
+    // Set uncompleted branches to end
+    int rmQuad = 0;
+    rmQuad = quad_list_clean_gotos(qt);
+    symbol_list_print(st);
+    quad_list_print(qt);
+
+    printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
+    printf("Cleaning...");
+    quad_list_free(qt, true);
+    symbol_free_memory(st);
+    lex_free();
+    printf("OK\n");
+    printf("YACC Exit code: %d\n", status);
+
+    return status;
 }

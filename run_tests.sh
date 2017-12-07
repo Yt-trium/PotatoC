@@ -15,7 +15,7 @@ for f in tests/*.txt ;
 do 
     echo "Running $f...";
     echo -e "$f\n" >> "test.log";
-    ./bin/potatoc < $f >> "test.log" 2>&1;
+    ./bin/potatoc $f >> "test.log" 2>&1;
     CODE=${PIPESTATUS[0]};
     echo -e "\n\n" >> "test.log";
     if [ "${CODE}" -ne "0" ]
