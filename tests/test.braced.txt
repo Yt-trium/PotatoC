@@ -1,0 +1,12 @@
+int a;
+{
+    int b = 100;
+    a = b / 2;
+}
+{
+    int c;
+}
+if(a==50){  a = 72; b=100; }
+// if(62>2) {int d;} not allowed
+
+if(b!=6) { a = 10; } else { a = 129; }

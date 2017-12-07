@@ -53,6 +53,7 @@
   expr_statement
   assign_statement
   declare_statement
+  braced_statement
 %type <exprData> expr
 
 %nonassoc LOWER_THAN_ELSE
@@ -86,7 +87,6 @@ statement_list:
         // free list
         quad_list_free($$.next, false);
         $$.next = $2.next;
-        $$.head = $2.head;
     }
 
     | statement 
@@ -112,9 +112,19 @@ statement:
         $$ = $1;
     }
 
+    | braced_statement
+    {
+        $$ = $1;
+    }
+
     | IF '(' condition ')' statement %prec LOWER_THAN_ELSE
     {
         $$.next = NULL;
+        if($5.head == NULL || $5.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside an if block.\n");
+            YYABORT;
+        }
         quad_list_complete($3.truelist, $5.head->q);
 
         $$.next = quad_list_concat($3.falselist, $5.next);
@@ -144,6 +154,20 @@ statement:
         quad_list_free($3.falselist, false);
         quad_list_free($5.next, false);
         quad_list_free($8.next, false);*/
+    }
+
+braced_statement:
+
+    '{' '}'
+    {
+        $$.head = NULL;
+        $$.next = NULL;
+    }
+
+    | '{' statement_list '}'
+    {
+        $$.head = $2.head;
+        $$.next = $2.next;
     }
 
 
