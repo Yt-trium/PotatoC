@@ -22,6 +22,7 @@
   struct bool_node_ {
       struct quad_list_* truelist;
       struct quad_list_* falselist;
+      struct quad_* top; // Usefull when lists are revert
   } condData;
   struct statement_node_ {
     struct quad_list_* head;
@@ -121,10 +122,7 @@ statement:
 
         $$.next = quad_list_concat($3.falselist, $5.next);
         // We need the top quad list element, but from the global list
-        if($3.truelist != NULL)
-            $$.head = quad_list_find(qt, $3.truelist->q->id);
-        else
-            $$.head = quad_list_find(qt, $3.falselist->q->id); 
+        $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
         //quad_list_free($3.truelist, false);
         //quad_list_free($3.falselist, false);
@@ -252,6 +250,7 @@ condition:
         $$.falselist= NULL;
         quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
+        $$.top = qif;
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);
@@ -263,7 +262,8 @@ condition:
         $$.truelist = NULL;
         $$.falselist= NULL;
         quad qgo = quad_goto_gen();
-        quad_add(&qt, qgo); 
+        $$.top = qgo;
+        quad_add(&qt, qgo);
         quad_add(&($$.truelist), qgo);
     }
 
@@ -272,6 +272,7 @@ condition:
         $$.truelist = NULL;
         $$.falselist= NULL;
         quad qgo = quad_goto_gen();
+        $$.top = qgo;
         quad_add(&qt, qgo); 
         quad_add(&($$.falselist), qgo);
     }
@@ -280,11 +281,9 @@ condition:
     {
         $$.truelist = NULL;
         $$.falselist = NULL;
+        $$.top = $1.top;
 
-        if($3.truelist != NULL) // Instead of M.quad
-            quad_list_complete($1.falselist, $3.truelist->q);
-        else
-            quad_list_complete($1.falselist, $3.falselist->q);
+        quad_list_complete($1.falselist, $3.top);
 
         $$.falselist = $3.falselist;
         $$.truelist = quad_list_concat($1.truelist, $3.truelist);
@@ -294,11 +293,9 @@ condition:
     {
         $$.truelist = NULL;
         $$.falselist = NULL;
+        $$.top = $1.top;
 
-        if($3.truelist != NULL) // Instead of M.quad
-            quad_list_complete($1.truelist, $3.truelist->q);
-        else
-            quad_list_complete($1.truelist, $3.falselist->q);
+        quad_list_complete($1.truelist, $3.top);
 
         $$.falselist = quad_list_concat($1.falselist, $3.falselist);
         $$.truelist = $3.truelist;
@@ -306,12 +303,16 @@ condition:
 
     | NOT condition
     {
+      $$.top = $2.top;
       $$.truelist = $2.falselist;
       $$.falselist = $2.truelist;
     }
 
     | '(' condition ')'
     {
+      $$.truelist = $2.truelist;
+      $$.falselist = $2.falselist;
+      $$.top = $2.top;
     }
 
 %%
@@ -337,7 +338,8 @@ int main() {
   int status = yyparse();
 
   // Set uncompleted branches to end
-  int rmQuad = quad_list_clean_gotos(qt);
+  int rmQuad = 0;
+  //rmQuad = quad_list_clean_gotos(qt);
   symbol_list_print(st);
   quad_list_print(qt);
 

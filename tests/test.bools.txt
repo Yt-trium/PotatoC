@@ -3,3 +3,6 @@ if(true) a = 2;
 if(a == 2) a=3;
 if(false) a=100;
 if(a>=90) a =0;
+6+6; // Separator
+if(6==5 && (false || true) && !9>10)e=500;
+f=0;
