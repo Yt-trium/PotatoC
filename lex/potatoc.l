@@ -38,6 +38,7 @@ comment    "//".*$
 "int"                   { return(INT); }
 "stencil"               { return(STENCIL); }
 
+"printi"                { return PRINTI; }
 "return"                { return(RETURN); }
 
 "="                     { return(ASSIGN); }

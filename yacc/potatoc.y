@@ -38,7 +38,7 @@
 }
 
 %token INT STENCIL
-%token IF ELSE WHILE FOR RETURN
+%token IF ELSE WHILE FOR RETURN PRINTI
 %token ASSIGN PLUS MINUS MULT DIVI INC DEC END
 %token TRUE FALSE OR AND NOT
 
@@ -115,6 +115,13 @@ statement:
     | braced_statement
     {
         $$ = $1;
+    }
+
+    | PRINTI '(' expr ')' END
+    {
+        $$.next = NULL;
+        $$.head = quad_add(&qt, quad_printi_gen($3.ptr));
+
     }
 
     | IF '(' condition ')' statement %prec LOWER_THAN_ELSE
