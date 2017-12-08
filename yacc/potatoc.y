@@ -6,6 +6,7 @@
   #include "symbol.h"
   #include "test.h"
   #include "quad.h"
+  #include "mips.h"
 
   void lex_free();
   void yyerror(char*);
@@ -459,8 +460,10 @@ int main(int argc, const char** argv) {
     {
         fprintf(stdout, "Reading from %s.\n", argv[1]);
         if(argc == 3)
+        {
             fprintf(stdout, "Output will be saved to %s.\n", argv[2]);
-
+            // FILE *fo = fopen(argv[2], "w");
+        }
         FILE *fi = fopen(argv[1], "r");
         if (!fi) {
             fprintf(stderr, "ERROR: Unable to input the given file %s.\n", argv[1]);
@@ -479,6 +482,7 @@ int main(int argc, const char** argv) {
     rmQuad = quad_list_clean_gotos(qt);
     symbol_list_print(st);
     quad_list_print(qt);
+    toMips(st,qt);
 
     printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
     printf("Cleaning...");

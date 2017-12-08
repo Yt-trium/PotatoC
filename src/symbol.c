@@ -124,7 +124,6 @@ symbol symbol_new_const(symbol* head, int v)
     return tmp;
 }
 
-
 void symbol_free_memory(symbol head)
 {
     // Clean from start to end
