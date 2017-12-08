@@ -9,7 +9,7 @@ void toMips(symbol st, quad_list qt)
     fprintf(os, ".data\n");
 
     while (st != NULL) {
-        if(st->type == SYMBOL_CST)
+        // if(st->type == SYMBOL_CST)
         {
             fprintf(os, "PTC_%s_:\t.word %d\n", st->name, st->value);
         }
@@ -62,6 +62,7 @@ void toMips(symbol st, quad_list qt)
         case QUAD_PRINTI:
             fprintf(os, "    li $v0, 1\n");
             fprintf(os, "    li $a0, %d\n", qt->q->res->value);
+            fprintf(os, "    syscall\n");
             break;
         // ASSIGN
         case QUAD_UOP_ASSIGN:
@@ -105,5 +106,9 @@ void toMips(symbol st, quad_list qt)
         qt = qt->next;
     }
     fprintf(os, "LABEL_END:\n");
+    fprintf(os, "    li $v0, 10\n");
+    fprintf(os, "    syscall\n");
+
+
     // LOOOOOL return;
 }
