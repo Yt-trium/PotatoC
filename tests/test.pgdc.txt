@@ -1,0 +1,13 @@
+int a = 200;
+int b = 403;
+int i;
+int gdc;
+i = 1;
+while(i < a && i < b)
+{
+    if(a%i == 0 && b%i == 0)
+        gdc = i;
+}
+
+printi(gdc);
+

@@ -40,7 +40,7 @@
 
 %token INT STENCIL
 %token IF ELSE WHILE FOR RETURN PRINTI
-%token ASSIGN PLUS MINUS MULT DIVI INC DEC END
+%token ASSIGN PLUS MINUS MULT DIVI INC DEC END MODULO
 %token TRUE FALSE OR AND NOT
 
 %token <value> CONSTANT RELOP
@@ -66,6 +66,7 @@
 %right ASSIGN
 %left PLUS MINUS
 %left MULT DIVI
+%left MODULO
 %left INC DEC
 
 %start axiom
@@ -307,6 +308,14 @@ expr:
         $$ = $2;
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_unary_gen(QUAD_UOP_MINUS, s, $2.ptr));
+        $$ = update_expr_node($$, s, ql);
+    }
+
+    | expr MODULO expr  
+    { 
+        $$ = $3;
+        symbol s = symbol_new_temp(&st);
+        quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MODULO, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
     }
 

@@ -9,6 +9,7 @@ enum OpType{
     QUAD_OP_MINUS,
     QUAD_OP_MULT,
     QUAD_OP_DIVI,
+    QUAD_OP_MODULO,
     QUAD_UOP_ASSIGN,
     QUAD_UOP_MINUS,
     QUAD_UOP_PLUS,

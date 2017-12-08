@@ -48,6 +48,7 @@ comment    "//".*$
 "-"                     { return(MINUS); }
 "*"                     { return(MULT); }
 "/"                     { return(DIVI); }
+"%"                     { return(MODULO); }
 ";"                     { return(END); }
 [()]                    { return yytext[0]; }
 [{}]                    { return yytext[0]; }

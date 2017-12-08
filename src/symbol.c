@@ -77,6 +77,9 @@ void            symbol_list_print(symbol head)
         printf("\n");
         head = head->next;
     }
+    printf("///////////////////\n");
+    printf("// End Symbol Table\n");
+    printf("///////////////////\n");
 }
 
 symbol symbol_new(symbol * head, char * name)

@@ -118,6 +118,8 @@ void quad_print(quad q)
                 printf("/"); break;
             case QUAD_UOP_ASSIGN:
                 printf("="); break;
+            case QUAD_OP_MODULO:
+                printf("%%"); break;
             default:
                 break;
         }
@@ -205,6 +207,9 @@ void quad_list_print(quad_list head)
         quad_print(head->q);
         head = head->next;
     }
+    printf("///////////////////\n");
+    printf("// end quad List\n");
+    printf("///////////////////\n");
 
 }
 
