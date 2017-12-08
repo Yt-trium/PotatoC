@@ -139,6 +139,16 @@ statement:
     | IF '(' condition ')' statement ELSE link statement
     {
         $$.next = NULL;
+        if($5.head == NULL || $5.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside an if block.\n");
+            YYABORT;
+        }
+        if($8.head == NULL || $8.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside an else block.\n");
+            YYABORT;
+        }
         quad_list_complete($3.truelist, $5.head->q);
         quad_list_complete($3.falselist, $8.head->q);
 
@@ -158,7 +168,23 @@ statement:
 
     | WHILE '(' condition ')' statement
     {
+        $$.next = NULL;
+        if($5.head == NULL || $5.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside a while block.\n");
+            YYABORT;
+        }
+        quad_list_complete($3.truelist, $5.head->q);
+        $$.next = $3.falselist;
 
+        // End while
+        quad qgo = quad_goto_gen();
+        qgo->dest = $3.top;
+        quad_add(&qt, qgo);
+
+        // Top while
+        $$.head = quad_list_find(qt, $3.top->id);
+        quad_list_complete($5.next, $3.top);
     }
 
 braced_statement:
@@ -361,7 +387,12 @@ condition:
         $$.falselist= NULL;
         quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
-        $$.top = qif;
+        if($1.ql != NULL && $1.ql->q != NULL)
+            $$.top = $1.ql->q;
+        else if($3.ql != NULL && $3.ql->q != NULL)
+            $$.top = $3.ql->q;
+        else
+            $$.top = qif;
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);
