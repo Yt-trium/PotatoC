@@ -39,7 +39,7 @@
 }
 
 %token INT STENCIL
-%token IF ELSE WHILE FOR RETURN
+%token IF ELSE WHILE FOR RETURN PRINTI
 %token ASSIGN PLUS MINUS MULT DIVI INC DEC END
 %token TRUE FALSE OR AND NOT
 
@@ -118,6 +118,13 @@ statement:
         $$ = $1;
     }
 
+    | PRINTI '(' expr ')' END
+    {
+        $$.next = NULL;
+        $$.head = quad_add(&qt, quad_printi_gen($3.ptr));
+
+    }
+
     | IF '(' condition ')' statement %prec LOWER_THAN_ELSE
     {
         $$.next = NULL;
@@ -140,6 +147,16 @@ statement:
     | IF '(' condition ')' statement ELSE link statement
     {
         $$.next = NULL;
+        if($5.head == NULL || $5.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside an if block.\n");
+            YYABORT;
+        }
+        if($8.head == NULL || $8.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside an else block.\n");
+            YYABORT;
+        }
         quad_list_complete($3.truelist, $5.head->q);
         quad_list_complete($3.falselist, $8.head->q);
 
@@ -147,14 +164,35 @@ statement:
         qll = quad_list_concat($5.next, $8.next);
         $$.next = quad_list_concat(qll, $8.next);
         $$.next = quad_list_append(&($$.next), $7.head->q);
-        //quad_list_free(qll, false);
+        quad_list_free(qll, false);
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
         // Free true list and false list but not the quads
-        /*quad_list_free($3.truelist, false);
+        quad_list_free($3.truelist, false);
         quad_list_free($3.falselist, false);
         quad_list_free($5.next, false);
-        quad_list_free($8.next, false);*/
+        quad_list_free($8.next, false);
+    }
+
+    | WHILE '(' condition ')' statement
+    {
+        $$.next = NULL;
+        if($5.head == NULL || $5.head->q == NULL)
+        {
+            fprintf(stderr, "ERROR: Empty statement is not allowed inside a while block.\n");
+            YYABORT;
+        }
+        quad_list_complete($3.truelist, $5.head->q);
+        $$.next = $3.falselist;
+
+        // End while
+        quad qgo = quad_goto_gen();
+        qgo->dest = $3.top;
+        quad_add(&qt, qgo);
+
+        // Top while
+        $$.head = quad_list_find(qt, $3.top->id);
+        quad_list_complete($5.next, $3.top);
     }
 
 braced_statement:
@@ -357,7 +395,12 @@ condition:
         $$.falselist= NULL;
         quad qif = quad_ifgoto_gen($1.ptr, $2, $3.ptr);
         quad qgo = quad_goto_gen();
-        $$.top = qif;
+        if($1.ql != NULL && $1.ql->q != NULL)
+            $$.top = $1.ql->q;
+        else if($3.ql != NULL && $3.ql->q != NULL)
+            $$.top = $3.ql->q;
+        else
+            $$.top = qif;
         quad_add(&qt, qif); 
         quad_add(&($$.truelist), qif);
         quad_add(&qt, qgo);

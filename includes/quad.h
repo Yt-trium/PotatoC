@@ -14,7 +14,8 @@ enum OpType{
     QUAD_UOP_PLUS,
     QUAD_GOTO_IF,
     QUAD_GOTO_END,
-    QUAD_GOTO
+    QUAD_GOTO,
+    QUAD_PRINTI
 };
 
 enum RelOp{
@@ -76,6 +77,12 @@ quad quad_unary_gen(enum OpType type, symbol res, symbol right);
 quad quad_ifgoto_gen(symbol, enum RelOp, symbol);
 
 quad quad_goto_gen();
+
+/**
+  * @brief Create a printi instruction with a given symbol
+  * @return The quad
+  */
+quad quad_printi_gen(symbol);
 
 /**
   * Add a quad in the list

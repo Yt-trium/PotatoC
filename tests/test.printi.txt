@@ -1,0 +1,4 @@
+printi(4);
+printi(6+2);
+int a = 72;
+printi(72);

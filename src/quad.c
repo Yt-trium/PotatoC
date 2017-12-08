@@ -59,6 +59,14 @@ quad quad_goto_gen()
 
 }
 
+quad quad_printi_gen(symbol s)
+{
+    quad q = quad_alloc();
+    q->type = QUAD_PRINTI;
+    q->res = s;
+    return q;
+}
+
 quad_list quad_add(quad_list *head, quad q)
 {
     if(*head == NULL)
@@ -128,7 +136,7 @@ void quad_print(quad q)
                    q->right->name);
         }
     }
-    else // GOto
+    else if(q->type <= QUAD_GOTO)// GOto
     {
         if(q->type == QUAD_GOTO_IF)
         {
@@ -164,6 +172,14 @@ void quad_print(quad q)
             printf("?\n");
         else
             printf("QUAD %5d\n", q->dest->id);
+    }
+    else if(q->type <= QUAD_PRINTI) // Printi
+    {
+        printf("PRINTI %5s\n", q->res->name);
+    }
+    else
+    {
+        printf("UNDEFINED\n");
     }
 
 
@@ -260,6 +276,7 @@ int quad_list_clean_gotos(quad_list head)
     while(head != NULL)
     {
         if(head->q->type >= QUAD_GOTO_IF &&
+                head->q->type <= QUAD_GOTO &&
                 head->q->dest == NULL)
         {
             head->q->type = QUAD_GOTO_END;
