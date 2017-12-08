@@ -18,6 +18,7 @@ do
     cat $f >> "test.log";
     echo >> "test.log";
     ./bin/potatoc $f >> "test.log" 2>&1;
+    cat "out.asm" >> "test.log";
     CODE=${PIPESTATUS[0]};
     echo -e "\n\n" >> "test.log";
     if [ "${CODE}" -ne "0" ]
