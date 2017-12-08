@@ -49,6 +49,20 @@ void toMips(symbol st, quad_list qt)
             fprintf(os, "    sw $t2, %s\n", qt->q->res->name);
             break;
         // UOP -> RIGHT
+        case QUAD_UOP_MINUS:
+            fprintf(os, "    lw $t0, %s\n", qt->q->right->name);
+            fprintf(os, "    sub $t0, $t0, 1\n");
+            fprintf(os, "    sw $t0, %s\n", qt->q->res->name);
+            break;
+        case QUAD_UOP_PLUS:
+            fprintf(os, "    lw $t0, %s\n", qt->q->right->name);
+            fprintf(os, "    add $t0, $t0, 1\n");
+            fprintf(os, "    sw $t0, %s\n", qt->q->res->name);
+            break;
+        case QUAD_PRINTI:
+            fprintf(os, "    li $v0, 1\n");
+            fprintf(os, "    li $a0, %d\n", qt->q->res->value);
+            break;
         // ASSIGN
         case QUAD_UOP_ASSIGN:
             fprintf(os, "    lw $t0, %s\n", qt->q->right->name);
@@ -73,16 +87,10 @@ void toMips(symbol st, quad_list qt)
         case QUAD_GOTO_END:
             fprintf(os, "    b LABEL_END\n");
             break;
-        default:
-            break;
         }
 
         qt = qt->next;
     }
     fprintf(os, "LABEL_END:\n");
-
-
-
-
     // LOOOOOL return;
 }
