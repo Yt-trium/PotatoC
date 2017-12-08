@@ -77,15 +77,28 @@ void toMips(symbol st, quad_list qt)
             case QUAD_RELOP_EQ:
                 fprintf(os, "    beq $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
                 break;
-            default:
+            case QUAD_RELOP_NEQ:
+                fprintf(os, "    bne $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
+                break;
+            case QUAD_RELOP_GT:
+                fprintf(os, "    bgtz $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
+                break;
+            case QUAD_RELOP_GTE:
+                fprintf(os, "    bgez $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
+                break;
+            case QUAD_RELOP_LT:
+                fprintf(os, "    bltz $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
+                break;
+            case QUAD_RELOP_LTE:
+                fprintf(os, "    blez $t0, $t1, LABEL_Q_%d\n", qt->q->dest->id);
                 break;
             }
             break;
         case QUAD_GOTO:
-            fprintf(os, "    b LABEL_Q_%d\n", qt->q->dest->id);
+            fprintf(os, "    j LABEL_Q_%d\n", qt->q->dest->id);
             break;
         case QUAD_GOTO_END:
-            fprintf(os, "    b LABEL_END\n");
+            fprintf(os, "    j LABEL_END\n");
             break;
         }
 
