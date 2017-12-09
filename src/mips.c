@@ -1,11 +1,7 @@
 #include "mips.h"
 
-void toMips(symbol st, quad_list qt)
+void toMips(symbol st, quad_list qt, FILE *os)
 {
-    // out stream
-    FILE* os = fopen("out.asm", "w");
-    // FILE* os = stdout;
-
     fprintf(os, ".data\n");
 
     while (st != NULL) {

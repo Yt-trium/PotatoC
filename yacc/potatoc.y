@@ -594,7 +594,7 @@ int main(int argc, const char** argv) {
         return -2;
     }
 
-    toMips(st,qt); // donner out ici
+    toMips(st,qt, out); // donner out ici
     fclose(out);
 
     // End, cleanup
