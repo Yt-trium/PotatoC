@@ -34,3 +34,16 @@ if(b<=7)
 
 if(b!=7)
     printi(666);
+
+int tmp;
+
+tmp = 2/4;
+printi(tmp);
+tmp = 2*4;
+printi(tmp);
+tmp = 2+4;
+printi(tmp);
+tmp = 4-2;
+printi(tmp);
+tmp = 5%2;
+printi(tmp);
