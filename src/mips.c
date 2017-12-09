@@ -1,11 +1,11 @@
 #include "mips.h"
 
-void toMips(symbol st, quad_list qt, FILE *os)
+void toMips(symbol st, quad_list qt, FILE* os)
 {
     fprintf(os, ".data\n");
 
-    while (st != NULL) {
-        // if(st->type == SYMBOL_CST)
+    while (st != NULL)
+    {
         {
             fprintf(os, "PTC_%s_:\t.word %d\n", st->name, st->value);
         }
@@ -45,7 +45,7 @@ void toMips(symbol st, quad_list qt, FILE *os)
             fprintf(os, "    div $t0, $t1\n");
             fprintf(os, "    mflo $t2\n");
             fprintf(os, "    sw $t2, PTC_%s_\n", qt->q->res->name);
-            break;            
+            break;
         case QUAD_OP_MODULO:
             fprintf(os, "    lw $t0, PTC_%s_\n", qt->q->left->name);
             fprintf(os, "    lw $t1, PTC_%s_\n", qt->q->right->name);
@@ -122,6 +122,4 @@ void toMips(symbol st, quad_list qt, FILE *os)
     fprintf(os, "LABEL_END:\n");
     fprintf(os, "    li $v0, 10\n");
     fprintf(os, "    syscall\n");
-
-    // LOOOOOL return;
 }

@@ -9,9 +9,9 @@
 
 /**
  * @brief   Transform the symbol table and the quad list to an assembly source file
- * @param   The symbol table
- * @param   The quad list
- * @param   The file pointer
+ * @param   symbol table
+ * @param   quad list
+ * @param   file pointer
  * @return  nothing
  */
 void toMips(symbol, quad_list, FILE*);
