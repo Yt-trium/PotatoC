@@ -382,8 +382,9 @@ expr:
         symbol add = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, add));
-        $$.ql = NULL;
-        $$ = update_expr_node($$, s, ql);
+        $$.ql = ql;
+        $$.ptr = s;
+        free($2);
     }
 
     | DEC IDENTIFIER  
@@ -397,8 +398,9 @@ expr:
         symbol sub = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, sub));
-        $$.ql = NULL;
-        $$ = update_expr_node($$, s, ql);
+        $$.ql = ql;
+        $$.ptr = s;
+        free($2);
     }
 
     | IDENTIFIER INC
@@ -412,8 +414,9 @@ expr:
         symbol add = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, add, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, add));
-        $$.ql = NULL;
-        $$ = update_expr_node($$, s, ql);
+        $$.ql = ql;
+        $$.ptr = s;
+        free($1);
     }
 
     | IDENTIFIER DEC
@@ -427,8 +430,9 @@ expr:
         symbol sub = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_MINUS, sub, s, one));
         quad_add(&qt, quad_unary_gen(QUAD_UOP_ASSIGN, s, sub));
-        $$.ql = NULL;
-        $$ = update_expr_node($$, s, ql);
+        $$.ql = ql;
+        $$.ptr = s;
+        free($1);
     }
 
     | expr MULT expr  
