@@ -6,30 +6,59 @@
   #include "quad.h"
   #include "mips.h"
 
-  void lex_free();
-  void yyerror(char*);
-  symbol st = NULL;
-  quad_list qt = NULL;
+  void lex_free();      // Free the memory used by lex
+  void yyerror(char*);  // Just to handle custom message
+  symbol st = NULL;     // The symbol table
+  quad_list qt = NULL;  // The main quad list
 
-  extern FILE *yyin;
-  extern int yylex();
+  extern FILE *yyin;    // The input file
+  extern int yylex();   
   extern int yyparse();
   
+  /**
+   * @brief Update the given expr_node
+   * Sets the given symbol.
+   * Sets the given quad list if haven't been set yet. Usefull to keep track of the first quad
+   * of the expression.
+   * @param The node
+   * @param The symbol
+   * @param The quad list containing the quad
+   * @return The updated node
+   */
   struct expr_node_ update_expr_node(struct expr_node_, symbol, quad_list);
 %}
 
 %union {
+  /** @brief Used for identifiers */
   char* string;
+  /** @brief Used for numbers and relops (==, !=, <= ...) */
   int value;
+  /** @struct bool_node_
+   * @brief Attributes of a condition rule
+   * @member truelist   quads to completed with true destination
+   * @member falselist  quads to completed with false destination
+   * @member top        first quad of the condition
+   * usefull when there is not in a condition and list are reverted
+   */
   struct bool_node_ {
       struct quad_list_* truelist;
       struct quad_list_* falselist;
       struct quad_* top; // Usefull when lists are revert
   } condData;
+  /** @struct statement_node_
+   * @brief Attributes of a statement
+   * @member head   The link list to the first quad of the statement
+   * @member next   The list of quads that need to be completed with the next statement's head
+   */
   struct statement_node_ {
     struct quad_list_* head;
     struct quad_list_* next;
   } statementData;
+  /** @struct expr_node_
+   * @brief Attributes of an expression
+   * @member ql     The link list to the first quad of the expression
+   * @member ptr    The symbol pointer to the resulting symbol of the expr
+   */
   struct expr_node_ {
      struct quad_list_* ql;
      struct symbol_* ptr;
@@ -55,6 +84,7 @@
   braced_statement
 %type <exprData> expr
 
+// Used to resolve shift reduce conflict in the if..else.. rule
 %nonassoc LOWER_THAN_ELSE
 %nonassoc ELSE
 
@@ -64,7 +94,7 @@
 %right ASSIGN
 %left PLUS MINUS
 %left MULT DIVI
-%left MODULO
+%left MODULO // Not sure for this one
 %left INC DEC
 
 %start axiom
@@ -76,21 +106,27 @@ axiom:
     statement_list
     {
         quad_list_free($1.next, false);
+        // End of the program, next won't be completed 
     }
 
 statement_list:
 
     statement_list statement
     {
+        // Complete previous quads with new statement's head quad
         if($2.head != NULL)
             quad_list_complete($$.next, $2.head->q);
         // free list
-        quad_list_free($$.next, false);
+        quad_list_free($$.next, false); 
+        // Each list is a new allocated one, so we need to free it
+        // Heriting
         $$.next = $2.next;
     }
 
     | statement 
     {
+        // Heriting
+        // First statement of the program
         $$.next = $1.next;
         $$.head = $1.head;
     }
@@ -121,7 +157,6 @@ statement:
     {
         $$.next = NULL;
         $$.head = quad_add(&qt, quad_printi_gen($3.ptr));
-
     }
 
     | IF '(' condition ')' statement %prec LOWER_THAN_ELSE
@@ -132,8 +167,11 @@ statement:
             fprintf(stderr, "ERROR: Empty statement is not allowed inside an if block.\n");
             YYABORT;
         }
+        // True goto will go to statement's head
         quad_list_complete($3.truelist, $5.head->q);
 
+        // Create the list of quads that need to be completed with the next statement
+        // or END if there isn't any
         $$.next = quad_list_concat($3.falselist, $5.next);
         // We need the top quad list element, but from the global list
         $$.head = quad_list_find(qt, $3.top->id);
@@ -145,6 +183,8 @@ statement:
 
     | IF '(' condition ')' statement ELSE link statement
     {
+        // link generated a goto thant quit the if statement instead of 
+        // executing the if and the else
         $$.next = NULL;
         if($5.head == NULL || $5.head->q == NULL)
         {
@@ -156,7 +196,9 @@ statement:
             fprintf(stderr, "ERROR: Empty statement is not allowed inside an else block.\n");
             YYABORT;
         }
+        // Where to go when true
         quad_list_complete($3.truelist, $5.head->q);
+        // Where to go when false
         quad_list_complete($3.falselist, $8.head->q);
 
         quad_list qll = NULL;
@@ -185,6 +227,7 @@ statement:
         $$.next = $3.falselist;
 
         // End while
+        // Go to the condition test 
         quad qgo = quad_goto_gen();
         qgo->dest = $3.top;
         quad_add(&qt, qgo);
@@ -208,11 +251,11 @@ braced_statement:
         $$.next = $2.next;
     }
 
-
 declare_statement:
 
     INT IDENTIFIER END
     {
+        // New integer
         symbol s = symbol_find(st, $2);
         if(s != NULL)
         {
@@ -227,6 +270,7 @@ declare_statement:
 
     | INT IDENTIFIER ASSIGN expr END
     {
+        // New integer with initialization
         symbol s = symbol_find(st, $2);
         if(s != NULL)
         {
@@ -247,7 +291,7 @@ assign_statement:
 
     IDENTIFIER ASSIGN expr END
     {
-
+        // a = something
         symbol s = symbol_find(st, $1);
         if(s == NULL){
             fprintf(stderr, "The variable %s isn't declared.\n", $1);
@@ -282,7 +326,6 @@ expr:
         symbol s = symbol_new_temp(&st);
         quad_list ql = quad_add(&qt, quad_gen(QUAD_OP_PLUS, s, $1.ptr, $3.ptr));
         $$ = update_expr_node($$, s, ql);
-        
     }
 
     | PLUS expr 
@@ -500,12 +543,13 @@ struct expr_node_ update_expr_node(struct expr_node_ node, symbol s, quad_list q
 int main(int argc, const char** argv) {
     int status = 0;
 
+    // Args check
     if(argc == 1)
     {
         fprintf(stdout, "Usage: %s [input [output]]\n", argv[0]);
         fprintf(stdout, "Reading from standard input.\n");
         fprintf(stdout, "Output will be saved to out.asm.\n");
-        status = yyparse();
+        status = yyparse(); // Default parsing
     }
     else if(argc >= 2)
     {
@@ -524,12 +568,12 @@ int main(int argc, const char** argv) {
         yyin = fi;
         do
         {
-            status = yyparse();
+            status = yyparse(); // Parsing from a file
         } while(!feof(yyin) && status == 0);
         fclose(fi);
     }
 
-    // Set uncompleted branches to end
+    // Set uncompleted branches to end (exit)
     int rmQuad = 0;
     rmQuad = quad_list_clean_gotos(qt);
     // Debug
@@ -537,7 +581,7 @@ int main(int argc, const char** argv) {
     quad_list_print(qt);
     printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
 
-    // Mips
+    // Mips generation
     FILE * out = stdout;
 
     if(argc == 3)
@@ -553,7 +597,7 @@ int main(int argc, const char** argv) {
     toMips(st,qt); // donner out ici
     fclose(out);
 
-    // End
+    // End, cleanup
     printf("Cleaning...");
     quad_list_free(qt, true);
     symbol_free_memory(st);
