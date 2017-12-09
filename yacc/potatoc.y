@@ -115,12 +115,21 @@ statement_list:
     {
         // Complete previous quads with new statement's head quad
         if($2.head != NULL)
+        {
             quad_list_complete($$.next, $2.head->q);
-        // free list
-        quad_list_free($$.next, false); 
-        // Each list is a new allocated one, so we need to free it
-        // Heriting
-        $$.next = $2.next;
+            // free list
+            quad_list_free($$.next, false); 
+            // Each list is a new allocated one, so we need to free it
+            // Heriting
+            $$.next = $2.next;
+        }
+        else
+        {
+            // If next line isnt an instruction (int a;)
+            quad_list ql = quad_list_concat($$.next, $2.next);
+            quad_list_free($$.next, false);
+            $$.next = ql;
+        }
     }
 
     | statement 
