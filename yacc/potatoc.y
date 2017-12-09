@@ -235,6 +235,8 @@ statement:
         // Top while
         $$.head = quad_list_find(qt, $3.top->id);
         quad_list_complete($5.next, $3.top);
+        quad_list_free($3.truelist, false);
+        quad_list_free($5.next, false);
     }
 
 braced_statement:
