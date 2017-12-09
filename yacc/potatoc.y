@@ -504,16 +504,18 @@ int main(int argc, const char** argv) {
     {
         fprintf(stdout, "Usage: %s [input [output]]\n", argv[0]);
         fprintf(stdout, "Reading from standard input.\n");
+        fprintf(stdout, "Output will be saved to out.asm.\n");
         status = yyparse();
     }
     else if(argc >= 2)
     {
         fprintf(stdout, "Reading from %s.\n", argv[1]);
         if(argc == 3)
-        {
             fprintf(stdout, "Output will be saved to %s.\n", argv[2]);
-            // FILE *fo = fopen(argv[2], "w");
-        }
+        else
+            fprintf(stdout, "Output will be saved to out.asm.\n");
+
+
         FILE *fi = fopen(argv[1], "r");
         if (!fi) {
             fprintf(stderr, "ERROR: Unable to input the given file %s.\n", argv[1]);
@@ -530,11 +532,28 @@ int main(int argc, const char** argv) {
     // Set uncompleted branches to end
     int rmQuad = 0;
     rmQuad = quad_list_clean_gotos(qt);
+    // Debug
     symbol_list_print(st);
     quad_list_print(qt);
-    toMips(st,qt);
-
     printf("Cleaned %d quad(s) with undefined branch\n", rmQuad);
+
+    // Mips
+    FILE * out = stdout;
+
+    if(argc == 3)
+        out = fopen(argv[2], "w");
+    else
+        out = fopen("out.asm", "w");
+
+    if(!out) {
+        fprintf(stderr, "ERROR: Unable to open the output file for writing.\n");
+        return -2;
+    }
+
+    toMips(st,qt); // donner out ici
+    fclose(out);
+
+    // End
     printf("Cleaning...");
     quad_list_free(qt, true);
     symbol_free_memory(st);
