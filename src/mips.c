@@ -66,7 +66,7 @@ void toMips(symbol st, quad_list qt, FILE *os)
             break;
         case QUAD_PRINTI:
             fprintf(os, "    li $v0, 1\n");
-            fprintf(os, "    li $a0, %d\n", qt->q->res->value);
+            fprintf(os, "    li $a0, PTC_%s_\n", qt->q->res->name);
             fprintf(os, "    syscall\n");
             fprintf(os, "    li $v0, 0xB\n");
             fprintf(os, "    li $a0, 0xA\n");

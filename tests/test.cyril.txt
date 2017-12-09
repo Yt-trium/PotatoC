@@ -7,3 +7,4 @@ b=6;
 if(b==4) b=4;
 
 printi(a);
+printi(2);
