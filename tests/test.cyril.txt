@@ -1,10 +1,30 @@
 int a;
 int b;
+
 a=5;
+
 if(a==5)
     a = 5 + 1;
-b=6;
-if(b==4) b=4;
 
-printi(a);
-printi(2);
+b=0;
+
+while(b <= a)
+    b++;
+
+if(b==7)
+    printi(111);
+
+if(b>=7)
+    printi(222);
+
+if(b>7)
+    printi(333);
+
+if(b<7)
+    printi(444);
+
+if(b<=7)
+    printi(555);
+
+if(b!=7)
+    printi(666);
