@@ -11,3 +11,8 @@ if(c!=100) a=c;
 if(a<=c) a=500;
 if(a<c) a=100;
 // a comment
+
+if(6<10)printi(1);
+else printi(0);
+
+

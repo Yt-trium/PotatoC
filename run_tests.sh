@@ -13,12 +13,12 @@ set -o pipefail # To get exit code of piped command
 echo
 for f in tests/*.txt ; 
 do 
-    echo "Running $f...";
+    echo "Running $f (${f%.txt}.asm)...";
     echo -e "$f\n" >> "test.log";
     cat $f >> "test.log";
     echo >> "test.log";
-    valgrind ./bin/potatoc $f >> "test.log" 2>&1;
-    cat "out.asm" >> "test.log";
+    valgrind ./bin/potatoc "$f" "${f%.txt}.asm" >> "test.log" 2>&1;
+    cat "${f%.txt}.asm" >> "test.log";
     CODE=${PIPESTATUS[0]};
     echo -e "\n\n" >> "test.log";
     if [ "${CODE}" -ne "0" ]

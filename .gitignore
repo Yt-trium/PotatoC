@@ -3,6 +3,7 @@ build
 quick
 out.asm
 bin
+tests/*.asm
 
 # Prerequisites
 *.d
