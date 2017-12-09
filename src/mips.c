@@ -108,6 +108,7 @@ void toMips(symbol st, quad_list qt)
     fprintf(os, "LABEL_END:\n");
     fprintf(os, "    li $v0, 10\n");
     fprintf(os, "    syscall\n");
+    fclose(os);
 
 
     // LOOOOOL return;
