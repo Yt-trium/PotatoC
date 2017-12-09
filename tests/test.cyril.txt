@@ -12,7 +12,10 @@ if(a==5)
 b=0;
 
 while(b <= a)
+{
     ++b;
+    printi(b);
+}
 
 if(b==7)
     printi(111);
