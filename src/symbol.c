@@ -4,7 +4,7 @@
 
 #include "symbol.h"
 
-symbol          symbol_alloc()
+symbol symbol_alloc()
 {
     symbol s = malloc(sizeof(symbol_));
 
@@ -16,22 +16,63 @@ symbol          symbol_alloc()
     return s;
 }
 
-void            symbol_print(symbol s)
+symbol symbol_new(symbol * head, char * name)
 {
-    if(s == NULL)
-        printf("ERROR: TRYING TO PRINT NULL SYMBOL");
-    else
-        printf("%s %d %d", s->name, s->type, s->value);
+    symbol tmp = symbol_alloc();
+
+    tmp->name = strdup(name);
+    tmp->type = SYMBOL_INT;
+    tmp->value = 0;
+
+    symbol_list_add(head, tmp);
+    return tmp;
 }
 
-symbol          symbol_list_add(symbol *head, symbol s)
+symbol symbol_new_temp(symbol* head)
+{
+    static unsigned int cmpCount = 0; // TMP count
+    symbol tmp = symbol_alloc();
+
+    size_t needed = snprintf(NULL, 0, "TEMP_%u", cmpCount++) + 1; // \0
+    // + 1 is for \0
+    tmp->name = malloc(needed);
+    snprintf(tmp->name, needed, "TEMP_%u", cmpCount++);
+
+    tmp->type = SYMBOL_INT;
+    tmp->value = 0;
+
+
+    symbol_list_add(head, tmp);
+    return tmp;
+}
+
+symbol symbol_new_const(symbol* head, int v)
+{
+    static unsigned int constCount = 0; // const count
+    symbol tmp = symbol_alloc();
+
+    size_t needed = snprintf(NULL, 0, "CONST_%u", constCount++) + 1;
+    // + 1 is for \0
+    tmp->name = malloc(needed);
+    snprintf(tmp->name, needed, "CONST_%u", constCount++);
+
+    tmp->type = SYMBOL_CST;
+    tmp->value = v;
+
+    symbol_list_add(head, tmp);
+    return tmp;
+}
+
+symbol symbol_list_add(symbol *head, symbol s)
 {
     if((*head) == NULL)
     {
+        // If the list is empty, create it
         (*head) = s;
     }
     else
     {
+        // Find the last empty slot
         symbol current = (*head);
         while(current->next != NULL)
             current = current->next;
@@ -42,6 +83,7 @@ symbol          symbol_list_add(symbol *head, symbol s)
 
 symbol symbol_must_find(symbol head, char * name)
 {
+    // Depends on symbol_find
     symbol s = symbol_find(head, name);
     if(s == NULL)
         fprintf(stderr, "ERROR: Trying to access undeclared variable: %s\n", name);
@@ -52,6 +94,7 @@ symbol symbol_find(symbol head, char * name)
 {
     while(head != NULL)
     {
+        // Find only for variables
         if(head->type == SYMBOL_INT && strcmp(head->name, name) == 0)
             return head;
         head = head->next;
@@ -59,7 +102,16 @@ symbol symbol_find(symbol head, char * name)
     return NULL;
 }
 
-void            symbol_list_print(symbol head)
+void symbol_print(symbol s)
+{
+    if(s == NULL)
+        printf("ERROR: TRYING TO PRINT NULL SYMBOL");
+    else
+        printf("%s %d %d", s->name, s->type, s->value);
+}
+
+
+void  symbol_list_print(symbol head)
 {
     printf("///////////////////\n");
     printf("// Symbol Table\n");
@@ -82,51 +134,6 @@ void            symbol_list_print(symbol head)
     printf("///////////////////\n");
 }
 
-symbol symbol_new(symbol * head, char * name)
-{
-    symbol tmp = symbol_alloc();
-
-    tmp->name = strdup(name);
-    tmp->type = SYMBOL_INT;
-    tmp->value = 0;
-
-    symbol_list_add(head, tmp);
-    return tmp;
-}
-
-symbol symbol_new_temp(symbol* head)
-{
-    static unsigned int cmpCount = 0;
-    symbol tmp = symbol_alloc();
-
-    size_t needed = snprintf(NULL, 0, "TEMP_%u", cmpCount++) + 1; // \0
-    tmp->name = malloc(needed);
-    snprintf(tmp->name, needed, "TEMP_%u", cmpCount++);
-
-    tmp->type = SYMBOL_INT;
-    tmp->value = 0;
-
-
-    symbol_list_add(head, tmp);
-    return tmp;
-}
-
-symbol symbol_new_const(symbol* head, int v)
-{
-    static unsigned int constCount = 0;
-    symbol tmp = symbol_alloc();
-
-    size_t needed = snprintf(NULL, 0, "CONST_%u", constCount++) + 1; // \0
-    tmp->name = malloc(needed);
-    snprintf(tmp->name, needed, "CONST_%u", constCount++);
-
-    tmp->type = SYMBOL_CST;
-    tmp->value = v;
-
-    symbol_list_add(head, tmp);
-    return tmp;
-}
-
 void symbol_free_memory(symbol head)
 {
     // Clean from start to end
@@ -134,6 +141,7 @@ void symbol_free_memory(symbol head)
     {
         symbol next = head->next;
 
+        // Check not usefull, free works with NULL
         if(head->name != NULL)
             free(head->name);
 
