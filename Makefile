@@ -46,5 +46,5 @@ bin/potatoc: yacc/potatoc.y lex/potatoc.l $(OBJS)
 clean:
 	rm -rif *.o ./bin/*.o y.*.c y.*.o y.*.h *.yy.c a.out $(EXS) y.*.output build
 
-test: all
-	./bin/potatoc
+archive:
+	tar zcvf compil_masson_meyer.tar.gz Makefile doc/potatoc src includes lex yacc tests test.log run_tests.sh COMPIL_MASSON_MEYER.pdf
