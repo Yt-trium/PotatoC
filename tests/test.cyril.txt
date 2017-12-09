@@ -3,6 +3,9 @@ int b;
 
 a=5;
 
+printi(5);
+printi(a);
+
 if(a==5)
     a = 5 + 1;
 
