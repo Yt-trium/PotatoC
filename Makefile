@@ -1,7 +1,5 @@
-# Need to set correct flag depending on the os
-# -lll for lex on Os X
-
-LFLAGS= -ly -lfl		    # Lex linking flags
+OS:=$(shell uname)
+LFLAGS= -ly 	    # Lex linking flags
 CFLAGS= -g -Wall -Iincludes -Ibuild    # C Flags
 C_COMPILER = gcc		    # C compiler
 EXS = bin/potatoc # Final output files
@@ -12,6 +10,16 @@ COMMON_DEPS = $(SOURCES) $(HEADERS)
 SOURCES = $(wildcard src/*.c)
 HEADERS = $(wildcard includes/*.h)
 OBJS = $(SOURCES:src/%.c=bin/%.o)
+
+# OS Specific
+$(info Running on $(OS))
+ifeq ($(OS),Darwin)
+    LFLAGS += -ll
+endif
+
+ifeq ($(OS),Linux)
+    LFLAGS += -lfl
+endif
 
 # Main
 
