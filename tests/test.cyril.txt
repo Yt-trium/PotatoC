@@ -47,3 +47,14 @@ tmp = 4-2;
 printi(tmp);
 tmp = 5%2;
 printi(tmp);
+
+b=1;
+
+printi(12345678);
+
+while(b<10)
+{
+    tmp = b%5;
+    printi(tmp);
+    ++b;
+}
