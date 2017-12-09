@@ -14,6 +14,8 @@ quad quad_alloc()
     q->right = NULL;
     q->dest = NULL;
     q->cmp = 0;
+    // Not everything is used for each quad, optimization can be made
+    // on this.
     return q;
 }
 
@@ -25,7 +27,6 @@ quad quad_gen(enum OpType type, symbol res, symbol left, symbol right)
     q->res = res;
     q->left = left;
     q->right = right;
-
     return q;
 }
 
@@ -35,10 +36,7 @@ quad quad_unary_gen(enum OpType type, symbol res, symbol right)
     q->type = type;
     q->res = res;
     q->right = right;
-    q->left = NULL;
-
     return q;
-
 }
 
 quad quad_ifgoto_gen(symbol left, enum RelOp op, symbol right)
@@ -56,7 +54,6 @@ quad quad_goto_gen()
     quad q = quad_alloc();
     q->type = QUAD_GOTO;
     return q;
-
 }
 
 quad quad_printi_gen(symbol s)
@@ -71,12 +68,14 @@ quad_list quad_add(quad_list *head, quad q)
 {
     if(*head == NULL)
     {
+        // If the list is empty, create a new one
         *head = quad_list_alloc();
         (*head)->q = q;
         return *head;
     }
     else
     {
+        // Find the last availalbe slot
         quad_list end = *head;
         while(end->next != NULL)
             end = end->next;
@@ -87,15 +86,90 @@ quad_list quad_add(quad_list *head, quad q)
     }
 }
 
-/*
-void quad_append(quad listLeft, quad listRight)
+quad_list quad_list_alloc()
 {
-    while(listLeft->next != NULL)
-        listLeft = listLeft->next;
-
-    listLeft->next = listRight;
+    quad_list ql = malloc(sizeof(quad_list_));
+    ql->previous = NULL;
+    ql->next = NULL;
+    ql->q = NULL;
+    return ql;
 }
-*/
+
+void quad_list_complete(quad_list list, quad q)
+{
+    while(list != NULL)
+    {
+        if(list->q != NULL &&
+                list->q->type >= QUAD_GOTO_IF &&
+                list->q->type <= QUAD_GOTO &&
+                list->q->dest == NULL)
+        {
+            // Complete only goto quads
+            list->q->dest = q;
+        }
+        list = list->next;
+    }
+}
+
+quad_list quad_list_concat(quad_list la, quad_list lb)
+{
+    quad_list res = NULL;
+
+    while(la != NULL) // Left list
+    {
+        if(la->q != NULL)
+            quad_add(&res, la->q);
+
+        la = la->next;
+    }
+
+    while(lb != NULL) // Right list
+    {
+        if(lb->q != NULL)
+            quad_add(&res, lb->q);
+
+        lb = lb->next;
+    }
+
+    return res;
+}
+
+quad_list quad_list_append(quad_list* ql, quad q)
+{
+    quad_add(ql, q);
+    return *ql;
+}
+
+int quad_list_clean_gotos(quad_list head)
+{
+    int count = 0; // Nb of edit
+
+    while(head != NULL)
+    {
+        if(head->q->type >= QUAD_GOTO_IF &&
+                head->q->type <= QUAD_GOTO &&
+                head->q->dest == NULL)
+        {
+            head->q->type = QUAD_GOTO_END;
+            count++;
+        }
+        head = head->next;
+
+    }
+    return count;
+}
+
+quad_list quad_list_find(quad_list head, int id)
+{
+    while(head != NULL)
+    {
+        if(head->q != NULL && head->q->id == id)
+            return head;
+        head = head->next;
+    }
+    fprintf(stderr, "WARNING: Cannot find quad with the id %d\n", id);
+    return 0;
+}
 
 void quad_print(quad q)
 {
@@ -183,18 +257,7 @@ void quad_print(quad q)
     {
         printf("UNDEFINED\n");
     }
-
-
-
-}
-
-quad_list quad_list_alloc()
-{
-    quad_list ql = malloc(sizeof(quad_list_));
-    ql->previous = NULL;
-    ql->next = NULL;
-    ql->q = NULL;
-    return ql;
+    // New to split the function in smaller ones
 }
 
 void quad_list_print(quad_list head)
@@ -221,86 +284,11 @@ void quad_list_free(quad_list head, bool cleanQuads)
 
         if(head->q != NULL && cleanQuads)
         {
+            // Check on NULL not really usefull
             free(head->q);
         }
-        free(head);
 
+        free(head);
         head = next;
     }
-
-}
-
-void        quad_list_complete(quad_list list, quad q)
-{
-    while(list != NULL)
-    {
-        if(list->q != NULL &&
-                list->q->type >= QUAD_GOTO_IF &&
-                list->q->dest == NULL)
-        {
-            list->q->dest = q;
-        }
-
-        list = list->next;
-    }
-}
-
-quad_list quad_list_concat(quad_list la, quad_list lb)
-{
-    quad_list res = NULL;
-
-    while(la != NULL)
-    {
-        if(la->q != NULL)
-            quad_add(&res, la->q);
-
-        la = la->next;
-    }
-
-    while(lb != NULL)
-    {
-        if(lb->q != NULL)
-            quad_add(&res, lb->q);
-
-        lb = lb->next;
-    }
-
-    return res;
-}
-
-quad_list quad_list_append(quad_list* ql, quad q)
-{
-    quad_add(ql, q);
-    return *ql;
-}
-
-int quad_list_clean_gotos(quad_list head)
-{
-    int count = 0;
-
-    while(head != NULL)
-    {
-        if(head->q->type >= QUAD_GOTO_IF &&
-                head->q->type <= QUAD_GOTO &&
-                head->q->dest == NULL)
-        {
-            head->q->type = QUAD_GOTO_END;
-            count++;
-        }
-        head = head->next;
-
-    }
-    return count;
-}
-
-quad_list quad_list_find(quad_list head, int id)
-{
-    while(head != NULL)
-    {
-        if(head->q != NULL && head->q->id == id)
-            return head;
-        head = head->next;
-    }
-    fprintf(stderr, "WARNING: Cannot find quad with the id %d\n", id);
-    return 0;
 }
