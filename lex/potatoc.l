@@ -6,7 +6,7 @@
 %}
 
 blank      [\t\b\v\n\f ]*
-identifier [a-zA-Z_]+[0-9a-zA-Z_]*
+identifier [a-zA-Z_][0-9a-zA-Z_]*
 number     (0|[1-9][0-9]*)
 comment    "//".*$
 
