@@ -32,7 +32,7 @@ $(DIR):
 
 # C Library 
 
-bin/%.o: src/%.c
+bin/%.o: src/%.c includes/%.h
 	$(C_COMPILER) -o $@ -c $< $(CFLAGS)
 
 # PotatoC
