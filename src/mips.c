@@ -55,14 +55,16 @@ void toMips(symbol st, quad_list qt, FILE* os)
             break;
         // UOP -> RIGHT
         case QUAD_UOP_MINUS:
-            fprintf(os, "    lw $t0, PTC_%s_\n", qt->q->right->name);
-            fprintf(os, "    sub $t0, $t0, 1\n");
-            fprintf(os, "    sw $t0, PTC_%s_\n", qt->q->res->name);
+            fprintf(os, "    li $t0, %d\n", 0);
+            fprintf(os, "    lw $t1, PTC_%s_\n", qt->q->right->name);
+            fprintf(os, "    sub $t2, $t0, $t1\n");
+            fprintf(os, "    sw $t2, PTC_%s_\n", qt->q->res->name);
             break;
         case QUAD_UOP_PLUS:
-            fprintf(os, "    lw $t0, PTC_%s_\n", qt->q->right->name);
-            fprintf(os, "    add $t0, $t0, 1\n");
-            fprintf(os, "    sw $t0, PTC_%s_\n", qt->q->res->name);
+            fprintf(os, "    li $t0, %d\n", 0);
+            fprintf(os, "    lw $t1, PTC_%s_\n", qt->q->right->name);
+            fprintf(os, "    add $t2, $t0, $t1\n");
+            fprintf(os, "    sw $t2, PTC_%s_\n", qt->q->res->name);
             break;
         case QUAD_PRINTI:
             fprintf(os, "    li $v0, 1\n");
