@@ -9,7 +9,7 @@
   int a;
   int b;
   int c;
-  a = -15;
+  a = 0-15;// assembleur
   b = 5;
   c = -2 * a;
   if ((a == b) || (a > b)) {
