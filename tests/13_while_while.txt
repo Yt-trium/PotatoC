@@ -1,4 +1,4 @@
-//#include <stdio.h>
+/#include <stdio.h>
 //#define printf(X) fprintf(stdout, "%s", (X))
 //#define printi(X) fprintf(stdout, "%d", (X))
 
